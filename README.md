@@ -1,2 +1,1 @@
-# ps1-ads-2026-2
-Repositório da disciplina de Programação de Scripts I (Back-End) - Fatec Franca 2026/2
+# ps1-ads-2026-2 Repository of the Script Programming I (Back-End) course
