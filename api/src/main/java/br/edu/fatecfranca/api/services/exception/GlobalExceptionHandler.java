@@ -1,9 +1,12 @@
 package br.edu.fatecfranca.api.services.exception;
 
+import java.util.List;
+
 import jakarta.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,13 +17,10 @@ import br.edu.fatecfranca.api.services.contract.ApiError;
 import br.edu.fatecfranca.api.services.contract.Contract;
 import br.edu.fatecfranca.api.services.contract.FieldError;
 
-import java.util.List;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Erros de validação provenientes de @Valid em @RequestBody.
@@ -46,9 +46,8 @@ public class GlobalExceptionHandler {
                 errors
         );
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Contract.error(apiError));
+        Contract<Void> body = Contract.badRequest(apiError);
+        return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     /**
@@ -78,9 +77,24 @@ public class GlobalExceptionHandler {
                 errors
         );
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(Contract.error(apiError));
+        Contract<Void> body = Contract.badRequest(apiError);
+        return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
+    }
+
+    /**
+     * Conflito de dados no banco (ex.: valor único duplicado).
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Contract<Void>> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception
+    ) {
+        ApiError error = ApiError.of(
+                "CONFLICT",
+                "Dados duplicados ou violando restrições do banco."
+        );
+
+        Contract<Void> body = Contract.conflict(error.getCode(), error.getMessage());
+        return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     /**
@@ -96,9 +110,8 @@ public class GlobalExceptionHandler {
                 exception.getMessage()
         );
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(Contract.error(error));
+        Contract<Void> body = Contract.notFound(error);
+        return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     /**
@@ -114,9 +127,8 @@ public class GlobalExceptionHandler {
                 exception.getMessage()
         );
 
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_CONTENT)
-                .body(Contract.error(error));
+        Contract<Void> body = Contract.unprocessableEntity(error);
+        return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     /**
@@ -138,8 +150,7 @@ public class GlobalExceptionHandler {
 
         logger.error("Unhandled exception caught by GlobalExceptionHandler", exception);
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Contract.error(error));
+        Contract<Void> body = Contract.internalServerError(error);
+        return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 }

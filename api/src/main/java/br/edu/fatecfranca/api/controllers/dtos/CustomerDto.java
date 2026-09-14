@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.dto;
+package br.edu.fatecfranca.api.controllers.dtos;
 
 import java.time.LocalDate;
 
