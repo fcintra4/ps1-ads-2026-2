@@ -1,10 +1,10 @@
-package br.edu.fatecfranca.api.exception;
+package br.edu.fatecfranca.api.services.exception;
 
-public class BusinessException extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
 
     private final String code;
 
-    public BusinessException(
+    public ResourceNotFoundException(
             String code,
             String message
     ) {

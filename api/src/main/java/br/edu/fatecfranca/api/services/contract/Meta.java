@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.contract;
+package br.edu.fatecfranca.api.services.contract;
 
 /**
  * Metadados adicionais da resposta.

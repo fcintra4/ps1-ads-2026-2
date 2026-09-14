@@ -1,8 +1,4 @@
-package br.edu.fatecfranca.api.exception;
-
-import br.edu.fatecfranca.api.contract.ApiError;
-import br.edu.fatecfranca.api.contract.Contract;
-import br.edu.fatecfranca.api.contract.FieldError;
+package br.edu.fatecfranca.api.services.exception;
 
 import jakarta.validation.ConstraintViolationException;
 
@@ -13,6 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import br.edu.fatecfranca.api.services.contract.ApiError;
+import br.edu.fatecfranca.api.services.contract.Contract;
+import br.edu.fatecfranca.api.services.contract.FieldError;
 
 import java.util.List;
 

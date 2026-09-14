@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.contract;
+package br.edu.fatecfranca.api.services.contract;
 
 /**
  * Representa um erro relacionado a um campo específico
