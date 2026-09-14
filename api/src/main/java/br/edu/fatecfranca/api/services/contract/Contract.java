@@ -158,31 +158,11 @@ public final class Contract<T> {
     // GETTERS
     // ==========================================
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public int getHttpStatus() {
-        return httpStatus;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public ApiError getError() {
-        return error;
-    }
-
-    public Meta getMeta() {
-        return meta;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public String getTraceId() {
-        return traceId;
-    }
+    public boolean isSuccess() { return success; }
+    public int getHttpStatus() { return httpStatus; }
+    public T getData() { return data; }
+    public ApiError getError() { return error; }
+    public Meta getMeta() { return meta; }
+    public Instant getTimestamp() { return timestamp; }
+    public String getTraceId() { return traceId; }
 }
