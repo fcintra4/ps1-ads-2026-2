@@ -119,4 +119,4 @@ public class CustomerController {
         Contract<Customers> body = Contract.ok(this.__cr__.save(c));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
-}
+} 
