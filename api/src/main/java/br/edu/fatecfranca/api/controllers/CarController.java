@@ -13,51 +13,51 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.edu.fatecfranca.api.entities.Customer;
-import br.edu.fatecfranca.api.repositories.CustomerRepository;
+import br.edu.fatecfranca.api.entities.Car;
+import br.edu.fatecfranca.api.repositories.CarRepository;
 
 @RestController
-@RequestMapping("/customers")
-public class CustomerController {
+@RequestMapping("/cars")
+public class CarController {
 
-  private final CustomerRepository repository;
+  private final CarRepository repository;
 
-  public CustomerController(CustomerRepository repository) {
+  public CarController(CarRepository repository) {
     this.repository = repository;
   }
 
   @PostMapping
-  public ResponseEntity<Customer> create(@RequestBody Customer customer) {
-    Customer savedCustomer = repository.save(customer);
+  public ResponseEntity<Car> create(@RequestBody Car car) {
+    Car savedCar = repository.save(car);
 
     return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(savedCustomer);
+            .body(savedCar);
   }
 
   @GetMapping
-  public List<Customer> findAll() {
+  public List<Car> findAll() {
     return repository.findAll();
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Customer> findById(@PathVariable Long id) {
+  public ResponseEntity<Car> findById(@PathVariable Long id) {
     return repository.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Customer> update(
+  public ResponseEntity<Car> update(
           @PathVariable Long id,
-          @RequestBody Customer customer) {
+          @RequestBody Car car) {
     if (!repository.existsById(id)) {
       return ResponseEntity.notFound().build();
     }
 
-    customer.setId(id);
+    car.setId(id);
 
-    return ResponseEntity.ok(repository.save(customer));
+    return ResponseEntity.ok(repository.save(car));
   }
 
   @DeleteMapping("/{id}")
@@ -70,6 +70,4 @@ public class CustomerController {
 
     return ResponseEntity.noContent().build();
   }
-
 }
-
