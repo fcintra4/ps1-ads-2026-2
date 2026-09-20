@@ -1,4 +1,4 @@
- {
+{
   "name": "Spring Boot com Java 25",
 
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
