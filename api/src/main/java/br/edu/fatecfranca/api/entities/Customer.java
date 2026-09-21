@@ -1,6 +1,7 @@
 package br.edu.fatecfranca.api.entities;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -10,147 +11,159 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "customers")
 public class Customer {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String name;
+    @Column(nullable = false)
+    private String name;
 
-  @Column(name = "ident_document", nullable = false, unique = true)
-  private String identDocument;
+    @Column(name = "ident_document", nullable = false, unique = true)
+    private String identDocument;
 
-  @Column(name = "birth_date")
-  private LocalDate birthDate;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
-  @Column(name = "street_name", nullable = false)
-  private String streetName;
+    @Column(name = "street_name", nullable = false)
+    private String streetName;
 
-  @Column(name = "house_number", nullable = false)
-  private String houseNumber;
+    @Column(name = "house_number", nullable = false)
+    private String houseNumber;
 
-  @Column(nullable = true)
-  private String complements;
+    @Column(nullable = true)
+    private String complements;
 
-  @Column(nullable = false)
-  private String district;
+    @Column(nullable = false)
+    private String district;
 
-  @Column(nullable = false)
-  private String municipality;
+    @Column(nullable = false)
+    private String municipality;
 
-  @JdbcTypeCode(SqlTypes.CHAR)
-  @Column(nullable = false, length = 2, columnDefinition = "CHAR(2)")
-  private String state;
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(nullable = false, length = 2, columnDefinition = "CHAR(2)")
+    private String state;
 
-  @Column(nullable = false)
-  private String phone;
+    @Column(nullable = false)
+    private String phone;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  public Customer() {
-  }
+    @OneToMany(mappedBy = "customer")
+    private List<Car> cars;
 
-  public Long getId() {
-    return id;
-  }
+    public Customer() {
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getIdentDocument() {
-    return identDocument;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setIdentDocument(String identDocument) {
-    this.identDocument = identDocument;
-  }
+    public String getIdentDocument() {
+        return identDocument;
+    }
 
-  public LocalDate getBirthDate() {
-    return birthDate;
-  }
+    public void setIdentDocument(String identDocument) {
+        this.identDocument = identDocument;
+    }
 
-  public void setBirthDate(LocalDate birthDate) {
-    this.birthDate = birthDate;
-  }
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
 
-  public String getStreetName() {
-    return streetName;
-  }
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
 
-  public void setStreetName(String streetName) {
-    this.streetName = streetName;
-  }
+    public String getStreetName() {
+        return streetName;
+    }
 
-  public String getHouseNumber() {
-    return houseNumber;
-  }
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
 
-  public void setHouseNumber(String houseNumber) {
-    this.houseNumber = houseNumber;
-  }
+    public String getHouseNumber() {
+        return houseNumber;
+    }
 
-  public String getComplements() {
-    return complements;
-  }
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
+    }
 
-  public void setComplements(String complements) {
-    this.complements = complements;
-  }
+    public String getComplements() {
+        return complements;
+    }
 
-  public String getDistrict() {
-    return district;
-  }
+    public void setComplements(String complements) {
+        this.complements = complements;
+    }
 
-  public void setDistrict(String district) {
-    this.district = district;
-  }
+    public String getDistrict() {
+        return district;
+    }
 
-  public String getMunicipality() {
-    return municipality;
-  }
+    public void setDistrict(String district) {
+        this.district = district;
+    }
 
-  public void setMunicipality(String municipality) {
-    this.municipality = municipality;
-  }
+    public String getMunicipality() {
+        return municipality;
+    }
 
-  public String getState() {
-    return state;
-  }
+    public void setMunicipality(String municipality) {
+        this.municipality = municipality;
+    }
 
-  public void setState(String state) {
-    this.state = state;
-  }
+    public String getState() {
+        return state;
+    }
 
-  public String getPhone() {
-    return phone;
-  }
+    public void setState(String state) {
+        this.state = state;
+    }
 
-  public void setPhone(String phone) {
-    this.phone = phone;
-  }
+    public String getPhone() {
+        return phone;
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
-  
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+
 }
