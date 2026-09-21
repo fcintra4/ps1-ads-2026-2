@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.exception;
+package br.edu.fatecfranca.api.services.policy.exception;
 
 import java.util.List;
 
@@ -13,9 +13,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.edu.fatecfranca.api.services.contract.ApiError;
-import br.edu.fatecfranca.api.services.contract.Contract;
-import br.edu.fatecfranca.api.services.contract.FieldError;
+import br.edu.fatecfranca.api.services.policy.contracts.ApiError;
+import br.edu.fatecfranca.api.services.policy.contracts.Contract;
+import br.edu.fatecfranca.api.services.policy.contracts.FieldError;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

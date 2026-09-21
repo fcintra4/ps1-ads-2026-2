@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.contract;
+package br.edu.fatecfranca.api.services.policy.contracts;
 
 import java.util.Collections;
 import java.util.List;

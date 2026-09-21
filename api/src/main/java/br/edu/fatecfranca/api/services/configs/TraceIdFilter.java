@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.config;
+package br.edu.fatecfranca.api.services.configs;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

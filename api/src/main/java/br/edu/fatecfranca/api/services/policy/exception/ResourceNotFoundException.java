@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.exception;
+package br.edu.fatecfranca.api.services.policy.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 

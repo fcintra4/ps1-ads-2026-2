@@ -19,18 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.fatecfranca.api.controllers.dtos.CustomerDto;
 import br.edu.fatecfranca.api.entities.Customers;
-import br.edu.fatecfranca.api.repositories.interfaces.CustomerRepository;
-import br.edu.fatecfranca.api.services.contract.Contract;
-import br.edu.fatecfranca.api.services.contract.PageMeta;
+import br.edu.fatecfranca.api.services.CustomersService;
+import br.edu.fatecfranca.api.services.policy.contracts.Contract;
+import br.edu.fatecfranca.api.services.policy.contracts.PageMeta;
 import jakarta.validation.Valid;
 
 @RestController @RequestMapping("/customers")
 public class CustomerController {
 
-    private final CustomerRepository __cr__;
-    public CustomerController(CustomerRepository x) { this.__cr__ = x; }
+    private final CustomersService service;
 
-    private boolean exists(Long id) { return this.__cr__.existsById(id); }
+    public CustomerController(CustomersService service) { this.service = service; }
+
+    private boolean exists(Long id) { return this.service.existsById(id); }
 
     @PostMapping
     public ResponseEntity<Contract<Long>> create(@Valid @RequestBody CustomerDto customerDto, BindingResult br) {
@@ -42,7 +43,7 @@ public class CustomerController {
             Contract<Long> body = Contract.badRequest("BAD_REQUEST", msg);
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
         }
-        Contract<Long> body = Contract.created(this.__cr__.save(customerDto.toEntity()).getId());
+        Contract<Long> body = Contract.created(this.service.create(customerDto.toEntity()).getId());
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
@@ -60,14 +61,15 @@ public class CustomerController {
             Contract<Customers> body = Contract.badRequest("BAD_REQUEST", msg);
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
         }
-        customerDto.toEntity().setId(id);
-        Contract<Customers> body = Contract.ok(this.__cr__.save(customerDto.toEntity()));
+        Customers customer = customerDto.toEntity();
+        customer.setId(id);
+        Contract<Customers> body = Contract.ok(this.service.update(customer));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     @GetMapping
     public ResponseEntity<Contract<Iterable<Customers>>> getAll(Pageable pageable) {
-        Page<Customers> page = this.__cr__.findAll(pageable);
+        Page<Customers> page = this.service.findAll(pageable);
         Contract<Iterable<Customers>> body = Contract.okPage(
             page.getContent(), PageMeta.of(page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages())
         );
@@ -76,7 +78,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Contract<Customers>> find(@PathVariable Long id) {
-        Contract<Customers> body = this.__cr__.findById(id)
+        Contract<Customers> body = this.service.findById(id)
                 .map(Contract::ok)
                 .orElse(Contract.notFound("CUSTOMER_NOT_FOUND", "Customer not found"));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
@@ -88,14 +90,14 @@ public class CustomerController {
             Contract<Void> body = Contract.notFound("CUSTOMER_NOT_FOUND", "Customer not found");
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
         }
-        this.__cr__.deleteById(id);
+        this.service.deleteById(id);
         Contract<Void> body = Contract.noContent();
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Contract<Customers>> patch(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
-        var opt = this.__cr__.findById(id);
+        var opt = this.service.findById(id);
         if (opt.isEmpty()) {
             Contract<Customers> body = Contract.notFound("CUSTOMER_NOT_FOUND", "Customer not found");
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
@@ -116,7 +118,7 @@ public class CustomerController {
         if (customerDto.getState() != null && !customerDto.getState().isBlank()) c.setState(customerDto.getState());
         if (customerDto.getPhone() != null && !customerDto.getPhone().isBlank()) c.setPhone(customerDto.getPhone());
         if (customerDto.getEmail() != null && !customerDto.getEmail().isBlank()) c.setEmail(customerDto.getEmail());
-        Contract<Customers> body = Contract.ok(this.__cr__.save(c));
+        Contract<Customers> body = Contract.ok(this.service.update(c));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
-} 
+}

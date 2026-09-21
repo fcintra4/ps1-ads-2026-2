@@ -20,18 +20,19 @@ import org.springframework.web.bind.annotation.RestController;
 import br.edu.fatecfranca.api.controllers.dtos.CarDto;
 import br.edu.fatecfranca.api.entities.Cars;
 import br.edu.fatecfranca.api.entities.Customers;
-import br.edu.fatecfranca.api.repositories.interfaces.CarRepository;
-import br.edu.fatecfranca.api.services.contract.Contract;
-import br.edu.fatecfranca.api.services.contract.PageMeta;
+import br.edu.fatecfranca.api.services.CarsService;
+import br.edu.fatecfranca.api.services.policy.contracts.Contract;
+import br.edu.fatecfranca.api.services.policy.contracts.PageMeta;
 import jakarta.validation.Valid;
 
 @RestController @RequestMapping("/cars")
 public class CarController {
 
-    private final CarRepository __cr__;
-    public CarController(CarRepository x) { this.__cr__ = x; }
+    private final CarsService service;
 
-    private boolean exists(Long id) { return this.__cr__.existsById(id); }
+    public CarController(CarsService service) { this.service = service; }
+
+    private boolean exists(Long id) { return this.service.existsById(id); }
 
     @PostMapping
     public ResponseEntity<Contract<Long>> create(@Valid @RequestBody CarDto carDto, BindingResult br) {
@@ -43,7 +44,7 @@ public class CarController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Contract.badRequest("BAD_REQUEST", msg));
         }
-        Contract<Long> body = Contract.created(this.__cr__.save(carDto.toEntity()).getId());
+        Contract<Long> body = Contract.created(this.service.create(carDto.toEntity()).getId());
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
@@ -63,13 +64,13 @@ public class CarController {
         }
         Cars car = carDto.toEntity();
         car.setId(id);
-        Contract<Cars> body = Contract.ok(this.__cr__.save(car));
+        Contract<Cars> body = Contract.ok(this.service.update(car));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     @GetMapping
     public ResponseEntity<Contract<Iterable<Cars>>> getAll(Pageable pageable) {
-        Page<Cars> page = this.__cr__.findAll(pageable);
+        Page<Cars> page = this.service.findAll(pageable);
         Contract<Iterable<Cars>> body = Contract.okPage(
             page.getContent(), PageMeta.of(page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages())
         );
@@ -78,7 +79,7 @@ public class CarController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Contract<Cars>> find(@PathVariable Long id) {
-        Contract<Cars> body = this.__cr__.findById(id)
+        Contract<Cars> body = this.service.findById(id)
                 .map(Contract::ok)
                 .orElse(Contract.notFound("CAR_NOT_FOUND", "Car not found"));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
@@ -90,14 +91,14 @@ public class CarController {
             Contract<Void> body = Contract.notFound("CAR_NOT_FOUND", "Car not found");
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
         }
-        this.__cr__.deleteById(id);
+        this.service.deleteById(id);
         Contract<Void> body = Contract.noContent();
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Contract<Cars>> patch(@PathVariable Long id, @RequestBody CarDto carDto) {
-        var opt = this.__cr__.findById(id);
+        var opt = this.service.findById(id);
         if (opt.isEmpty()) {
             Contract<Cars> body = Contract.notFound("CAR_NOT_FOUND", "Car not found");
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
@@ -122,7 +123,7 @@ public class CarController {
             c.setCustomer(customer);
         }
 
-        Contract<Cars> body = Contract.ok(this.__cr__.save(c));
+        Contract<Cars> body = Contract.ok(this.service.update(c));
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
 }
