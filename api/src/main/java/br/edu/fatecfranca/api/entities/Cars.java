@@ -42,6 +42,7 @@ import jakarta.persistence.Table;
    public void setSellingPrice(BigDecimal sellingPrice) { this.sellingPrice = sellingPrice; }
 
    public Customers getCustomer() { return customer; }
+   public Long getCustomerId() { return customer != null ? customer.getId() : null; }
    public void setCustomer(Customers customer) { this.customer = customer; }
 
    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
@@ -53,9 +54,8 @@ import jakarta.persistence.Table;
    @Column(name = "plates", nullable = false, unique = true) private String plates;
    @Column(name = "selling_date") private LocalDate sellingDate;
    @Column(name = "selling_price", precision = 12, scale = 2) private BigDecimal sellingPrice;
-   @ManyToOne(fetch = FetchType.LAZY) 
-   @JoinColumn(name = "customer_id") 
-   private Customers customer;
+   
+   @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "customer_id") private Customers customer;
 
    public Cars() {}
 }
