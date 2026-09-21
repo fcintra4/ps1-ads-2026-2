@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // Importação correta
+
 @Entity
 @Table(name = "cars")
 public class Car {
@@ -45,6 +47,7 @@ public class Car {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @JsonIgnore // Evita o loop infinito no JSON
     private Customer customer;
 
     public Car() {
@@ -55,7 +58,7 @@ public class Car {
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.id = id; // CORRIGIDO: de class.id para this.id
     }
 
     public String getBrand() {
@@ -127,6 +130,15 @@ public class Car {
     }
 
     public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+    
+    // Mostra o ID numérico do cliente no JSON dos Carros
+    public Long getCustomerId() {
+        return customer != null ? customer.getId() : null;
+    }
+
+    public void setCustomerId(Customer customer) {
         this.customer = customer;
     }
 }
