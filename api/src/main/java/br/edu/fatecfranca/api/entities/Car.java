@@ -29,7 +29,7 @@ public class Car {
     private String color;
 
     @Column(name = "year_manufacture", nullable = false)
-    private Long yearManufacture;
+    private Integer yearManufacture;
 
     @Column(nullable = false)
     private Boolean imported;
@@ -40,7 +40,6 @@ public class Car {
     @Column(name = "selling_date")
     private LocalDate sellingDate;
 
-  
     @Column(name = "selling_price", precision = 12, scale = 2)
     private BigDecimal sellingPrice;
 
@@ -48,8 +47,12 @@ public class Car {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-
     public Car() {
+    }
+
+    // customerId obtido a partir do relacionamento
+    public Long getCustomerId() {
+        return customer != null ? customer.getId() : null;
     }
 
     public Long getId() {
@@ -84,11 +87,11 @@ public class Car {
         this.color = color;
     }
 
-    public Long getYearManufacture() {
+    public Integer getYearManufacture() {
         return yearManufacture;
     }
 
-    public void setYearManufacture(Long yearManufacture) {
+    public void setYearManufacture(Integer yearManufacture) {
         this.yearManufacture = yearManufacture;
     }
 
