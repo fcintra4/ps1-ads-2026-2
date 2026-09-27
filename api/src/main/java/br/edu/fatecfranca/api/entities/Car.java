@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,8 +26,12 @@ public class Car {
     @Column(nullable = false)
     private String color;
 
-    @Column(name = "customer_id")
-    private Long customerId;
+    //@Column(name = "customer_id")
+    //private Long customerId;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @Column(nullable = false)
     private Boolean imported;
@@ -73,12 +79,21 @@ public class Car {
         this.color = color;
     }
 
+    //public Long getCustomerId() {
+    //    return customerId;
+    //}
+
+    //public void setCustomerId(Long customerId) {
+    //    this.customerId = customerId;
+    //}
+
+    // customerId agora é obtido a partir do relacionamento
     public Long getCustomerId() {
-        return customerId;
+        return customer != null ? customer.getId() : null;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public Boolean getImported() {
