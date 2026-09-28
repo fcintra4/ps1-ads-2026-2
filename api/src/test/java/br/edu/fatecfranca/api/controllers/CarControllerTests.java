@@ -18,13 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import br.edu.fatecfranca.api.entities.Car;
-import br.edu.fatecfranca.api.repositories.CarRepository;
+import br.edu.fatecfranca.api.services.CarService;
 
 @ExtendWith(MockitoExtension.class)
 class CarControllerTests {
 
   @Mock
-  private CarRepository repository;
+  private CarService service;
 
   @InjectMocks
   private CarController controller;
@@ -32,7 +32,7 @@ class CarControllerTests {
   @Test
   void createReturnsCreatedCar() {
     Car car = new Car();
-    when(repository.save(car)).thenReturn(car);
+    when(service.create(car)).thenReturn(car);
 
     ResponseEntity<Car> response = controller.create(car);
 
@@ -43,7 +43,7 @@ class CarControllerTests {
   @Test
   void findAllReturnsCars() {
     List<Car> cars = List.of(new Car(), new Car());
-    when(repository.findAll()).thenReturn(cars);
+    when(service.findAll()).thenReturn(cars);
 
     List<Car> response = controller.findAll();
 
@@ -54,7 +54,7 @@ class CarControllerTests {
   void findByIdReturnsCarWhenItExists() {
     Car car = new Car();
     car.setId(4L);
-    when(repository.findById(4L)).thenReturn(Optional.of(car));
+    when(service.findById(4L)).thenReturn(Optional.of(car));
 
     ResponseEntity<Car> response = controller.findById(4L);
 
@@ -64,7 +64,7 @@ class CarControllerTests {
 
   @Test
   void findByIdReturnsNotFoundWhenCarDoesNotExist() {
-    when(repository.findById(19L)).thenReturn(Optional.empty());
+    when(service.findById(19L)).thenReturn(Optional.empty());
 
     ResponseEntity<Car> response = controller.findById(19L);
 
@@ -74,45 +74,45 @@ class CarControllerTests {
   @Test
   void updateReturnsSavedCarWhenItExists() {
     Car car = new Car();
-    when(repository.existsById(5L)).thenReturn(true);
-    when(repository.save(car)).thenReturn(car);
+    when(service.existsById(5L)).thenReturn(true);
+    when(service.update(car)).thenReturn(car);
 
     ResponseEntity<Car> response = controller.update(5L, car);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(5L, car.getId());
     assertSame(car, response.getBody());
-    verify(repository).save(car);
+    verify(service).update(car);
   }
 
   @Test
   void updateReturnsNotFoundWhenCarDoesNotExist() {
     Car car = new Car();
-    when(repository.existsById(25L)).thenReturn(false);
+    when(service.existsById(25L)).thenReturn(false);
 
     ResponseEntity<Car> response = controller.update(25L, car);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(repository, never()).save(car);
+    verify(service, never()).update(car);
   }
 
   @Test
   void deleteReturnsNoContentWhenCarExists() {
-    when(repository.existsById(3L)).thenReturn(true);
+    when(service.existsById(3L)).thenReturn(true);
 
     ResponseEntity<Void> response = controller.delete(3L);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    verify(repository).deleteById(3L);
+    verify(service).deleteById(3L);
   }
 
   @Test
   void deleteReturnsNotFoundWhenCarDoesNotExist() {
-    when(repository.existsById(11L)).thenReturn(false);
+    when(service.existsById(11L)).thenReturn(false);
 
     ResponseEntity<Void> response = controller.delete(11L);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(repository, never()).deleteById(11L);
+    verify(service, never()).deleteById(11L);
   }
 }

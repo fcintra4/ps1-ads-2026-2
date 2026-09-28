@@ -17,13 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import br.edu.fatecfranca.api.entities.Customer;
-import br.edu.fatecfranca.api.repositories.CustomerRepository;
+import br.edu.fatecfranca.api.services.CustomerService;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerControllerTests {
 
   @Mock
-  private CustomerRepository repository;
+  private CustomerService service;
 
   @InjectMocks
   private CustomerController controller;
@@ -32,7 +32,7 @@ class CustomerControllerTests {
   void findByIdReturnsCustomerWhenItExists() {
     Customer customer = new Customer();
     customer.setId(4L);
-    when(repository.findById(4L)).thenReturn(Optional.of(customer));
+    when(service.findById(4L)).thenReturn(Optional.of(customer));
 
     ResponseEntity<Customer> response = controller.findById(4L);
 
@@ -42,7 +42,7 @@ class CustomerControllerTests {
 
   @Test
   void findByIdReturnsNotFoundWhenCustomerDoesNotExist() {
-    when(repository.findById(19L)).thenReturn(Optional.empty());
+    when(service.findById(19L)).thenReturn(Optional.empty());
 
     ResponseEntity<Customer> response = controller.findById(19L);
 
@@ -52,45 +52,45 @@ class CustomerControllerTests {
   @Test
   void updateReturnsSavedCustomerWhenItExists() {
     Customer customer = new Customer();
-    when(repository.existsById(5L)).thenReturn(true);
-    when(repository.save(customer)).thenReturn(customer);
+    when(service.existsById(5L)).thenReturn(true);
+    when(service.update(customer)).thenReturn(customer);
 
     ResponseEntity<Customer> response = controller.update(5L, customer);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(5L, customer.getId());
     assertSame(customer, response.getBody());
-    verify(repository).save(customer);
+    verify(service).update(customer);
   }
 
   @Test
   void updateReturnsNotFoundWhenCustomerDoesNotExist() {
     Customer customer = new Customer();
-    when(repository.existsById(25L)).thenReturn(false);
+    when(service.existsById(25L)).thenReturn(false);
 
     ResponseEntity<Customer> response = controller.update(25L, customer);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(repository, never()).save(customer);
+    verify(service, never()).update(customer);
   }
 
   @Test
   void deleteReturnsNoContentWhenCustomerExists() {
-    when(repository.existsById(3L)).thenReturn(true);
+    when(service.existsById(3L)).thenReturn(true);
 
     ResponseEntity<Void> response = controller.delete(3L);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    verify(repository).deleteById(3L);
+    verify(service).deleteById(3L);
   }
 
   @Test
   void deleteReturnsNotFoundWhenCustomerDoesNotExist() {
-    when(repository.existsById(11L)).thenReturn(false);
+    when(service.existsById(11L)).thenReturn(false);
 
     ResponseEntity<Void> response = controller.delete(11L);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(repository, never()).deleteById(11L);
+    verify(service, never()).deleteById(11L);
   }
 }
