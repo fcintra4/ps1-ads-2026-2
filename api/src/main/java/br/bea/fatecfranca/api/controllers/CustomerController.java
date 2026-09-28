@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.bea.fatecfranca.api.entities.Customer;
-import br.bea.fatecfranca.api.repositories.CustomerRepository;
+//import br.bea.fatecfranca.api.repositories.CustomerRepository;
 import br.bea.fatecfranca.api.services.CustomerService;
 
 @RestController
