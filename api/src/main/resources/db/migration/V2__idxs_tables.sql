@@ -34,3 +34,15 @@ ON cars(brand, model);
 -- Otimiza relatórios de vendas e buscas por intervalo de datas
 CREATE INDEX IF NOT EXISTS idx_cars_selling_date 
 ON cars(selling_date);
+
+-- =========================================================
+-- ÍNDICES PARA A TABELA USERS
+-- =========================================================
+
+-- Idx Nome
+CREATE UNIQUE INDEX IF NOT EXISTS users_username_key 
+ON users (username);
+
+-- Idx Email
+CREATE UNIQUE INDEX IF NOT EXISTS users_email_key 
+ON users (email);

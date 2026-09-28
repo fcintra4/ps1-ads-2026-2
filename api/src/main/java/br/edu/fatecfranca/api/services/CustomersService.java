@@ -8,8 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.edu.fatecfranca.api.entities.Customers;
+import br.edu.fatecfranca.api.logic.domain.CustomersDomain;
 import br.edu.fatecfranca.api.repositories.interfaces.CustomerRepository;
-import br.edu.fatecfranca.api.services.logic.domain.CustomersDomain;
 
 @Service
 public class CustomersService {

@@ -3,6 +3,7 @@ package br.edu.fatecfranca.api.controllers.dtos;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import br.edu.fatecfranca.api.entities.Cars;
 import br.edu.fatecfranca.api.entities.Customers;
 import jakarta.validation.constraints.DecimalMin;
@@ -12,6 +13,9 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 public class CarDto {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
 
     @NotBlank
     @Size(max = 100)
@@ -47,6 +51,7 @@ public class CarDto {
 
     public CarDto(Cars c) {
         if (c == null) return;
+        this.id = c.getId();
         this.brand = c.getBrand();
         this.model = c.getModel();
         this.color = c.getColor();
@@ -94,6 +99,8 @@ public class CarDto {
 
     public String getBrand() { return brand; }
     public void setBrand(String brand) { this.brand = brand; }
+
+    public Long getId() { return id; }
 
     public String getModel() { return model; }
     public void setModel(String model) { this.model = model; }

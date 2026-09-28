@@ -1,0 +1,1 @@
+### Professor Mudei o contrato de resposta da API, Deixe um pouco mais claro seguindo boas praticas para facilitar futuramente, espero não ter fugido do proposito com essas mudanças.

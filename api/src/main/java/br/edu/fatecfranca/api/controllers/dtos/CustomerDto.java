@@ -2,6 +2,7 @@ package br.edu.fatecfranca.api.controllers.dtos;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import br.edu.fatecfranca.api.entities.Customers;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class CustomerDto{
+
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long id;
 
 	@NotBlank
 	@Size(max = 100)
@@ -56,6 +60,7 @@ public class CustomerDto{
 
 	public CustomerDto(Customers c) {
 		if (c == null) return;
+		this.id = c.getId();
 		this.name = c.getName();
 		this.identDocument = c.getIdentDocument();
 		this.birthDate = c.getBirthDate();
@@ -131,5 +136,7 @@ public class CustomerDto{
 
 	public String getEmail() { return email; }
 	public void setEmail(String email) { this.email = email; }
+
+	public Long getId() { return id; }
 
 }

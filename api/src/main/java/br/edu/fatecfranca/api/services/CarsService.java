@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.edu.fatecfranca.api.entities.Cars;
+import br.edu.fatecfranca.api.logic.domain.CarsDomain;
 import br.edu.fatecfranca.api.repositories.interfaces.CarRepository;
-import br.edu.fatecfranca.api.services.logic.domain.CarsDomain;
 
 @Service
 public class CarsService {

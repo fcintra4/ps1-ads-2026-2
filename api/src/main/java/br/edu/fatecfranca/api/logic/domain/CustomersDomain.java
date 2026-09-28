@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.logic.domain;
+package br.edu.fatecfranca.api.logic.domain;
 
 import java.util.List;
 import java.util.Optional;
