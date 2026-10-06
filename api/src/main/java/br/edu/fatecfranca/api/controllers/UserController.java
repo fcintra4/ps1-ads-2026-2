@@ -1,5 +1,6 @@
 package br.edu.fatecfranca.api.controllers;
 
+import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.entities.User;
 import br.edu.fatecfranca.api.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -26,8 +27,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
-        User savedUser = service.create(user);
+    public ResponseEntity<User> create(@RequestBody UserRequest request) {
+        User savedUser = service.create(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -47,13 +48,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody UserRequest request) {
         if (!service.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
-        user.setId(id);
-        return ResponseEntity.ok(service.update(user));
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
