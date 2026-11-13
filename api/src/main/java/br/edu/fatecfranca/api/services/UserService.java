@@ -26,7 +26,7 @@ public class UserService {
         user.setUsername(request.username());
         user.setEmail(request.email());
         user.setPassword(request.password());
-        user.setIs_admin(request.is_admin());
+        user.setIs_admin(request.isAdmin());
 
         return repository.save(user);
     }
@@ -47,7 +47,7 @@ public class UserService {
         user.setUsername(request.username());
         user.setEmail(request.email());
         user.setPassword(request.password());
-        user.setIs_admin(request.is_admin());
+        user.setIs_admin(request.isAdmin());
 
         return repository.save(user);
     }

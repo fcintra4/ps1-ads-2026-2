@@ -3,6 +3,7 @@ package br.edu.fatecfranca.api.controllers;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody UserRequest request) {
+    public ResponseEntity<User> create(@Valid @RequestBody UserRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(service.create(request));
@@ -50,7 +51,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> update(
             @PathVariable Long id,
-            @RequestBody UserRequest request) {
+            @Valid @RequestBody UserRequest request) {
 
         if (!service.existsById(id)) {
             return ResponseEntity.notFound().build();
