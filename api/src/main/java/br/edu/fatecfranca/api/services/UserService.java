@@ -1,4 +1,3 @@
-
 package br.edu.fatecfranca.api.services;
 
 import java.util.List;
@@ -10,14 +9,22 @@ import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.entities.User;
 import br.edu.fatecfranca.api.repositories.UserRepository;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import br.edu.fatecfranca.api.dtos.LoginRequest;
+
 @Service
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repository) {
-        this.repository = repository;
-    }
+
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+       this.repository = repository;
+       this.passwordEncoder = passwordEncoder;
+   }
+
 
     public User create(UserRequest request) {
         User user = new User();
@@ -25,11 +32,38 @@ public class UserService {
         user.setFullname(request.fullname());
         user.setUsername(request.username());
         user.setEmail(request.email());
-        user.setPassword(request.password());
+       user.setPassword(passwordEncoder.encode(request.password()));
         user.setIs_admin(request.isAdmin());
 
         return repository.save(user);
     }
+
+    public Optional<User> authenticate(LoginRequest request) {
+       String usernameOrEmail = request.usernameOrEmail().strip();
+
+       Optional<User> result =
+               repository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+
+       if (result.isEmpty()) {
+           return Optional.empty();
+       }
+
+       User user = result.get();
+
+       // Neste ponto ocorre a comparação entre os hashes da senha
+       // digitada e da senha cadastrada
+       boolean validPassword = passwordEncoder.matches(
+           request.password(),
+           user.getPassword()
+       );
+
+       if (!validPassword) {
+           return Optional.empty();
+       }
+
+       return Optional.of(user);
+   }
+
 
     public List<User> findAll() {
         return repository.findAll();
