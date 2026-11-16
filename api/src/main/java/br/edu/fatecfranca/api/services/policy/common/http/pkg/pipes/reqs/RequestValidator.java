@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators;
+package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs;
 
 public abstract class RequestValidator<T> {
 

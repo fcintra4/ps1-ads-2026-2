@@ -25,8 +25,8 @@ import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.LoginRe
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ResetPasswordRequest;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.UserReq;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ValidationGroups;
-import br.edu.fatecfranca.api.services.policy.common.http.pkg.presentation.responses.LoginResponse;
 import br.edu.fatecfranca.api.services.policy.contracts.Contract;
+import br.edu.fatecfranca.api.services.policy.contracts.presentation.responses.LoginResponse;
 import br.edu.fatecfranca.api.services.policy.secure.jwt.TokenJwt;
 
 @RestController @RequestMapping("/users")

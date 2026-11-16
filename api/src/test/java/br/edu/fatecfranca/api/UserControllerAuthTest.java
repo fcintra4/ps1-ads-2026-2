@@ -24,8 +24,8 @@ import br.edu.fatecfranca.api.services.UsersService;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ForgotPasswordRequest;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.LoginRequest;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ResetPasswordRequest;
-import br.edu.fatecfranca.api.services.policy.common.http.pkg.presentation.responses.LoginResponse;
 import br.edu.fatecfranca.api.services.policy.contracts.Contract;
+import br.edu.fatecfranca.api.services.policy.contracts.presentation.responses.LoginResponse;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerAuthTest {

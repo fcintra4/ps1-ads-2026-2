@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.CustomerReq;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.RequestValidator;
 
 public class StateValidator extends RequestValidator<CustomerReq> {
 

@@ -8,12 +8,30 @@ import org.springframework.data.domain.Pageable;
 
 import br.edu.fatecfranca.api.entities.Customers;
 import br.edu.fatecfranca.api.repositories.interfaces.CustomerRepository;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.CustomerReq;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.RequestValidator;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.StateValidator;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.UniqueDocumentValidator;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.UniqueEmailValidator;
 
 public class CustomersDomain {
 
     private final CustomerRepository repository;
+    private final RequestValidator<CustomerReq> validator;
 
-    public CustomersDomain(CustomerRepository repository) { this.repository = repository; }
+    public CustomersDomain(CustomerRepository repository) {
+        this.repository = repository;
+        this.validator = new StateValidator(
+            new UniqueDocumentValidator(repository,
+                new UniqueEmailValidator(repository, null)
+            )
+        );
+    }
+
+    public CustomerReq ChainOfResponsibility(CustomerReq request, Long customerId) {
+        validator.validate(request, customerId);
+        return request;
+    }
 
     public Customers create(Customers customer) { return repository.save(customer); }
     public List<Customers> findAll() { return repository.findAll(); }
