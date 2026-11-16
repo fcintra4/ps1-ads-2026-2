@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.controllers.pipes.dtos;
+package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.dtos;
 
 import br.edu.fatecfranca.api.entities.Users;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.controllers.presentation.responses;
+package br.edu.fatecfranca.api.services.policy.common.http.pkg.presentation.responses;
 
 import java.time.LocalDate;
 

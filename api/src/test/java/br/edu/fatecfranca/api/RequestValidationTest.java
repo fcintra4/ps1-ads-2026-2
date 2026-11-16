@@ -7,9 +7,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import br.edu.fatecfranca.api.controllers.pipes.reqs.CarReq;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.UserReq;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.ValidationGroups;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.CarReq;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.UserReq;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ValidationGroups;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 

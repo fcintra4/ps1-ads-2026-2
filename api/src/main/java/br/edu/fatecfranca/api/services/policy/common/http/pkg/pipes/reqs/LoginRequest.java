@@ -1,4 +1,4 @@
-package br.edu.fatecfranca.api.controllers.pipes.reqs;
+package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs;
 
 import jakarta.validation.constraints.NotBlank;
 

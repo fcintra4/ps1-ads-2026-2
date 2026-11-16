@@ -16,12 +16,18 @@ public interface CustomerRepository extends JpaRepository<Customers, Long> {
     @Query("SELECT COUNT(c) > 0 FROM Customers c WHERE c.identDocument = :identDocument")
     boolean existsByIdentDocument(@Param("identDocument") String identDocument);
 
+    @Query("SELECT COUNT(c) > 0 FROM Customers c WHERE c.identDocument = :identDocument AND c.id <> :id")
+    boolean existsByIdentDocumentAndIdNot(@Param("identDocument") String identDocument, @Param("id") Long id);
+
     // Índice: idx_customers_email
     @Query("SELECT c FROM Customers c WHERE c.email = :email")
     Optional<Customers> findByEmail(@Param("email") String email);
 
     @Query("SELECT COUNT(c) > 0 FROM Customers c WHERE c.email = :email")
     boolean existsByEmail(@Param("email") String email);
+
+    @Query("SELECT COUNT(c) > 0 FROM Customers c WHERE c.email = :email AND c.id <> :id")
+    boolean existsByEmailAndIdNot(@Param("email") String email, @Param("id") Long id);
 
     // Índice: idx_customers_name
     @Query("SELECT c FROM Customers c WHERE c.name = :name")

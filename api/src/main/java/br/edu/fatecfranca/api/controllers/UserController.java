@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
 
-import br.edu.fatecfranca.api.controllers.pipes.dtos.UserDto;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.ForgotPasswordRequest;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.LoginRequest;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.ResetPasswordRequest;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.UserReq;
-import br.edu.fatecfranca.api.controllers.pipes.reqs.ValidationGroups;
-import br.edu.fatecfranca.api.controllers.presentation.responses.LoginResponse;
 import br.edu.fatecfranca.api.entities.Users;
 import br.edu.fatecfranca.api.services.UsersService;
 import br.edu.fatecfranca.api.services.PasswordResetService;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.metadata.PageMeta;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.dtos.UserDto;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ForgotPasswordRequest;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.LoginRequest;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ResetPasswordRequest;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.UserReq;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ValidationGroups;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.presentation.responses.LoginResponse;
 import br.edu.fatecfranca.api.services.policy.contracts.Contract;
 import br.edu.fatecfranca.api.services.policy.secure.jwt.TokenJwt;
 
