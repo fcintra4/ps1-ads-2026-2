@@ -1,24 +1,32 @@
 package br.edu.fatecfranca.api.services;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import br.edu.fatecfranca.api.dtos.LoginRequest;
 import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.entities.User;
 import br.edu.fatecfranca.api.repositories.UserRepository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User create(UserRequest request) {
-        return repository.save(toEntity(request));
+        User user = new User();
+        copyToEntity(request, user);
+        return repository.save(user);
     }
 
     public List<User> findAll() {
@@ -30,8 +38,9 @@ public class UserService {
     }
 
     public User update(Long id, UserRequest request) {
-        User user = toEntity(request);
+        User user = new User();
         user.setId(id);
+        copyToEntity(request, user);
         return repository.save(user);
     }
 
@@ -43,13 +52,30 @@ public class UserService {
         repository.deleteById(id);
     }
 
-    private User toEntity(UserRequest request) {
-        User user = new User();
+    public Optional<User> authenticate(LoginRequest request) {
+        String usernameOrEmail = request.usernameOrEmail().strip();
+        Optional<User> result = repository.findByUsernameOrEmail(
+                usernameOrEmail,
+                usernameOrEmail
+        );
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        User user = result.get();
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(user);
+    }
+
+    private void copyToEntity(UserRequest request, User user) {
         user.setFullname(request.fullname());
         user.setUsername(request.username());
         user.setEmail(request.email());
-        user.setPassword(request.password());
-        user.setIsAdmin(request.isAdmin() == null ? false : request.isAdmin());
-        return user;
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setIsAdmin(Boolean.TRUE.equals(request.isAdmin()));
     }
 }
