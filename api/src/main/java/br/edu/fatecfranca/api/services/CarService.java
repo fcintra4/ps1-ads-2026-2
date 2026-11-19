@@ -4,6 +4,10 @@ import br.edu.fatecfranca.api.dtos.CarRequest;
 import br.edu.fatecfranca.api.entities.Car;
 import br.edu.fatecfranca.api.repositories.CustomerRepository;
 import br.edu.fatecfranca.api.repositories.CarRepository;
+import br.edu.fatecfranca.api.validators.ManufactureYearValidator;
+import br.edu.fatecfranca.api.validators.RequestValidator;
+import br.edu.fatecfranca.api.validators.SaleDataValidator;
+import br.edu.fatecfranca.api.validators.UniquePlatesValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,13 +18,24 @@ public class CarService {
 
     private final CarRepository repository;
     private final CustomerRepository customerRepository;
+    private final RequestValidator<CarRequest> validator;
 
     public CarService(CarRepository repository, CustomerRepository customerRepository) {
         this.repository = repository;
         this.customerRepository = customerRepository;
+
+        RequestValidator<CarRequest> platesValidator =
+            new UniquePlatesValidator(repository, null);
+
+        RequestValidator<CarRequest> saleDataValidator =
+            new SaleDataValidator(platesValidator);
+
+        this.validator = new ManufactureYearValidator(saleDataValidator);
     }
 
     public Car create(CarRequest request) {
+        validator.validate(request, null);
+
         return repository.save(toEntity(request));
     }
 
@@ -33,6 +48,8 @@ public class CarService {
     }
 
     public Car update(Long id, CarRequest request) {
+        validator.validate(request, id);
+
         Car car = toEntity(request);
         car.setId(id);
         return repository.save(car);
