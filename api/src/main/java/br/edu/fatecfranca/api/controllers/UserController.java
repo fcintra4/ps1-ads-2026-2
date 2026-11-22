@@ -13,61 +13,100 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.entities.User;
 import br.edu.fatecfranca.api.services.UserService;
+
+import br.edu.fatecfranca.api.dtos.UserResponse;
+
+import jakarta.validation.Valid;
+
+import br.edu.fatecfranca.api.dtos.LoginRequest;
+import br.edu.fatecfranca.api.dtos.UserResponse;
+
+// (...código existente...)
+
+import br.edu.fatecfranca.api.dtos.LoginResponse;
+import br.edu.fatecfranca.api.services.TokenService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-  private final UserService service;
+    private final UserService service;
+    private final TokenService tokenService;
 
-  public UserController(UserService service) {
-    this.service = service;
-  }
+    public UserController(UserService service, TokenService tokenService
+    ) {
+        this.service = service;
+        this.tokenService = tokenService;
+    }
 
-  @PostMapping
-  public ResponseEntity<User> create(@RequestBody User user) {
-    User savedUser = service.create(user);
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
 
-    return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(savedUser);
-  }
-
-  @GetMapping
-  public List<User> findAll() {
-    return service.findAll();
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<User> findById(@PathVariable Long id) {
-    return service.findById(id)
+        return service.authenticate(request)
+            .map(user -> new LoginResponse(
+                    tokenService.generate(user),
+                    new UserResponse(user)))
             .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<User> update(
-          @PathVariable Long id,
-          @RequestBody User user) {
-    if (!service.existsById(id)) {
-      return ResponseEntity.notFound().build();
+            .orElseGet(() -> ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .build());
     }
 
-    user.setId(id);
+    // (...código existente...)
 
-    return ResponseEntity.ok(service.update(user));
-  }
+    @PostMapping
+    public ResponseEntity<UserResponse> create(
+            @RequestBody UserRequest request) {
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
-    if (!service.existsById(id)) {
-      return ResponseEntity.notFound().build();
+        User savedUser = service.create(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new UserResponse(savedUser));
     }
 
-    service.deleteById(id);
+    @GetMapping
+    public List<UserResponse> findAll() {
+        return service.findAll()
+                .stream()
+                .map(UserResponse::new)
+                .toList();
+    }
 
-    return ResponseEntity.noContent().build();
-  }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+        return service.findById(id)
+                .map(UserResponse::new)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> update(
+            @PathVariable Long id,
+            @RequestBody UserRequest request) {
+
+        if (!service.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User updatedUser = service.update(id, request);
+
+        return ResponseEntity.ok(new UserResponse(updatedUser));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!service.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        service.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

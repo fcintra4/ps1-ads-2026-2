@@ -16,11 +16,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import br.edu.fatecfranca.api.dtos.CustomerRequest;
 import br.edu.fatecfranca.api.entities.Customer;
 import br.edu.fatecfranca.api.services.CustomerService;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerControllerTests {
+
+  private CustomerRequest request() {
+    return new CustomerRequest("Marina", "52998224725", null, "Rua das Acacias", "245", null, "Centro", "Franca", "SP", "16999990123", "marina@example.com");
+  }
 
   @Mock
   private CustomerService service;
@@ -52,15 +57,16 @@ class CustomerControllerTests {
   @Test
   void updateReturnsSavedCustomerWhenItExists() {
     Customer customer = new Customer();
+    customer.setId(5L);
     when(service.existsById(5L)).thenReturn(true);
-    when(service.update(customer)).thenReturn(customer);
+    when(service.update(5L, request())).thenReturn(customer);
 
-    ResponseEntity<Customer> response = controller.update(5L, customer);
+    ResponseEntity<Customer> response = controller.update(5L, request());
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(5L, customer.getId());
     assertSame(customer, response.getBody());
-    verify(service).update(customer);
+    verify(service).update(5L, request());
   }
 
   @Test
@@ -68,10 +74,10 @@ class CustomerControllerTests {
     Customer customer = new Customer();
     when(service.existsById(25L)).thenReturn(false);
 
-    ResponseEntity<Customer> response = controller.update(25L, customer);
+    ResponseEntity<Customer> response = controller.update(25L, request());
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(service, never()).update(customer);
+    verify(service, never()).update(25L, request());
   }
 
   @Test

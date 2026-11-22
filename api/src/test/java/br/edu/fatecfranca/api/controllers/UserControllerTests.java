@@ -17,11 +17,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.entities.User;
+import br.edu.fatecfranca.api.dtos.UserResponse;
+import br.edu.fatecfranca.api.services.TokenService;
 import br.edu.fatecfranca.api.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTests {
+
+  private UserRequest request() {
+    return new UserRequest("Vitor", "vitor", "vitor@example.com", "senha1234", false);
+  }
+
+  @Mock
+  private TokenService tokenService;
 
   @Mock
   private UserService service;
@@ -32,12 +42,12 @@ class UserControllerTests {
   @Test
   void createReturnsCreatedUser() {
     User user = new User();
-    when(service.create(user)).thenReturn(user);
+    when(service.create(request())).thenReturn(user);
 
-    ResponseEntity<User> response = controller.create(user);
+    ResponseEntity<UserResponse> response = controller.create(request());
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    assertSame(user, response.getBody());
+    assertEquals(new UserResponse(user), response.getBody());
   }
 
   @Test
@@ -45,9 +55,9 @@ class UserControllerTests {
     List<User> users = List.of(new User(), new User());
     when(service.findAll()).thenReturn(users);
 
-    List<User> response = controller.findAll();
+    List<UserResponse> response = controller.findAll();
 
-    assertSame(users, response);
+    assertEquals(users.stream().map(UserResponse::new).toList(), response);
   }
 
   @Test
@@ -56,17 +66,17 @@ class UserControllerTests {
     user.setId(1L);
     when(service.findById(1L)).thenReturn(Optional.of(user));
 
-    ResponseEntity<User> response = controller.findById(1L);
+    ResponseEntity<UserResponse> response = controller.findById(1L);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertSame(user, response.getBody());
+    assertEquals(new UserResponse(user), response.getBody());
   }
 
   @Test
   void findByIdReturnsNotFoundWhenUserDoesNotExist() {
     when(service.findById(3L)).thenReturn(Optional.empty());
 
-    ResponseEntity<User> response = controller.findById(3L);
+    ResponseEntity<UserResponse> response = controller.findById(3L);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -74,15 +84,16 @@ class UserControllerTests {
   @Test
   void updateReturnsSavedUserWhenItExists() {
     User user = new User();
+    user.setId(1L);
     when(service.existsById(1L)).thenReturn(true);
-    when(service.update(user)).thenReturn(user);
+    when(service.update(1L, request())).thenReturn(user);
 
-    ResponseEntity<User> response = controller.update(1L, user);
+    ResponseEntity<UserResponse> response = controller.update(1L, request());
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(1L, user.getId());
-    assertSame(user, response.getBody());
-    verify(service).update(user);
+    assertEquals(new UserResponse(user), response.getBody());
+    verify(service).update(1L, request());
   }
 
   @Test
@@ -90,10 +101,10 @@ class UserControllerTests {
     User user = new User();
     when(service.existsById(3L)).thenReturn(false);
 
-    ResponseEntity<User> response = controller.update(3L, user);
+    ResponseEntity<UserResponse> response = controller.update(3L, request());
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(service, never()).update(user);
+    verify(service, never()).update(3L, request());
   }
 
   @Test

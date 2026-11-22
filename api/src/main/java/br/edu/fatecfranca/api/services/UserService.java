@@ -5,39 +5,90 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.entities.User;
 import br.edu.fatecfranca.api.repositories.UserRepository;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import br.edu.fatecfranca.api.dtos.LoginRequest;
 
 @Service
 public class UserService {
 
-  private final UserRepository repository;
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository repository) {
-    this.repository = repository;
-  }
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-  public User create(User user) {
-    return repository.save(user);
-  }
+    private void copyToEntity(UserRequest request, User user) {
+        user.setFullname(request.fullname());
+        user.setUsername(request.username());
+        user.setEmail(request.email());
+        // passwordEncoder gera o hash para a senha recebida
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setIsAdmin(Boolean.TRUE.equals(request.isAdmin()));
+    }
 
-  public List<User> findAll() {
-    return repository.findAll();
-  }
+    public Optional<User> authenticate(LoginRequest request) {
+        String usernameOrEmail = request.usernameOrEmail().strip();
 
-  public Optional<User> findById(Long id) {
-    return repository.findById(id);
-  }
+        Optional<User> result =
+                repository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
 
-  public User update(User user) {
-    return repository.save(user);
-  }
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
 
-  public boolean existsById(Long id) {
-    return repository.existsById(id);
-  }
+        User user = result.get();
 
-  public void deleteById(Long id) {
-    repository.deleteById(id);
-  }
+        // Neste ponto ocorre a comparação entre os hashes da senha
+        // digitada e da senha cadastrada
+        boolean validPassword = passwordEncoder.matches(
+            request.password(),
+            user.getPassword()
+        );
+
+        if (!validPassword) {
+            return Optional.empty();
+        }
+
+        return Optional.of(user);
+    }
+
+    // (...código existente...)
+
+    public User create(UserRequest request) {
+        User user = new User();
+        copyToEntity(request, user);
+
+        return repository.save(user);
+    }
+
+    public List<User> findAll() {
+        return repository.findAll();
+    }
+
+    public Optional<User> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    public User update(Long id, UserRequest request) {
+        User user = new User();
+        copyToEntity(request, user);
+        user.setId(id);
+
+        return repository.save(user);
+    }
+
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
+    }
+
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
 }

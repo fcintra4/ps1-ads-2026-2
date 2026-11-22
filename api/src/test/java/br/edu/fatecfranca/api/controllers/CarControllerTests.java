@@ -17,11 +17,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import br.edu.fatecfranca.api.dtos.CarRequest;
 import br.edu.fatecfranca.api.entities.Car;
 import br.edu.fatecfranca.api.services.CarService;
 
 @ExtendWith(MockitoExtension.class)
 class CarControllerTests {
+
+  private CarRequest request() {
+    return new CarRequest("Honda", "Civic", "Preto", 2021L, false, "ABC1D23", null, null, null);
+  }
 
   @Mock
   private CarService service;
@@ -32,9 +37,9 @@ class CarControllerTests {
   @Test
   void createReturnsCreatedCar() {
     Car car = new Car();
-    when(service.create(car)).thenReturn(car);
+    when(service.create(request())).thenReturn(car);
 
-    ResponseEntity<Car> response = controller.create(car);
+    ResponseEntity<Car> response = controller.create(request());
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
     assertSame(car, response.getBody());
@@ -74,15 +79,16 @@ class CarControllerTests {
   @Test
   void updateReturnsSavedCarWhenItExists() {
     Car car = new Car();
+    car.setId(5L);
     when(service.existsById(5L)).thenReturn(true);
-    when(service.update(car)).thenReturn(car);
+    when(service.update(5L, request())).thenReturn(car);
 
-    ResponseEntity<Car> response = controller.update(5L, car);
+    ResponseEntity<Car> response = controller.update(5L, request());
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(5L, car.getId());
     assertSame(car, response.getBody());
-    verify(service).update(car);
+    verify(service).update(5L, request());
   }
 
   @Test
@@ -90,10 +96,10 @@ class CarControllerTests {
     Car car = new Car();
     when(service.existsById(25L)).thenReturn(false);
 
-    ResponseEntity<Car> response = controller.update(25L, car);
+    ResponseEntity<Car> response = controller.update(25L, request());
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    verify(service, never()).update(car);
+    verify(service, never()).update(25L, request());
   }
 
   @Test
