@@ -36,7 +36,7 @@ public class Car {
    @Column(name = "plates", nullable = false)
    private String plates;
 
-   @Column(name = "selling_date", nullable = false)
+   @Column(name = "selling_date", nullable = true)
    private LocalDate selling_date;
 
    @Column(name = "selling_price", precision = 12, scale = 2)
