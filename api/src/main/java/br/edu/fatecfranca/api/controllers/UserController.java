@@ -60,7 +60,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> create(
-            @RequestBody UserRequest request) {
+            @Valid @RequestBody UserRequest request) {
 
         User savedUser = service.create(request);
 
@@ -88,7 +88,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(
             @PathVariable Long id,
-            @RequestBody UserRequest request) {
+            @Valid @RequestBody UserRequest request) {
 
         if (!service.existsById(id)) {
             return ResponseEntity.notFound().build();
