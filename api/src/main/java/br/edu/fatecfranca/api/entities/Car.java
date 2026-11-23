@@ -94,10 +94,9 @@ public class Car {
         return yearManufacture;
     }
 
-    public void  setYearManufacture(){
+    public void  setYearManufacture(Integer yearManufacture) {
         this.yearManufacture = yearManufacture;
     }
-
 
 
     public Boolean getImported() {
