@@ -48,9 +48,7 @@ public class CarController {
   public ResponseEntity<Car> create(@Valid @RequestBody CarRequest request) {
     Car savedCar = service.create(request);
 
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(savedCar);
+    return ResponseEntity.ok(savedCar);
   }
 
   // @GetMapping

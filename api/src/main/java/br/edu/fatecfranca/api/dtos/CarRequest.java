@@ -37,7 +37,7 @@ public record CarRequest(
     @PastOrPresent(message = "A data de venda não pode estar no futuro.")
     LocalDate sellingDate,
 
-    @Positive(message = "O preço de venda deve ser maior que zero.")
+    // REMOVEMOS O @POSITIVE DAQUI PARA DEIXAR O VALIDADOR DA CADEIA TRABALHAR E DAR 409:
     @Digits(integer = 10, fraction = 2, message = "O preço deve ter no máximo 10 dígitos e 2 decimais.")
     BigDecimal sellingPrice,
 
