@@ -38,7 +38,6 @@ public record CarRequest(
    @PastOrPresent(message = "A data de venda não pode estar no futuro.")
    LocalDate sellingDate,
 
-   @Positive(message = "O preço de venda deve ser maior que zero.")
    @Digits(
        integer = 10,
        fraction = 2,

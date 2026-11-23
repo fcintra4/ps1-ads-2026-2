@@ -28,10 +28,9 @@ public class ManufactureYearValidator extends RequestValidator<CarRequest> {
 
         if (year < MIN_YEAR || year > currentYear) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "O ano de fabricação deve estar entre " + MIN_YEAR
-                    + " e " + currentYear + "."
-            );
+                    HttpStatus.CONFLICT,
+                    "O ano de fabricação deve estar entre " + MIN_YEAR
+                            + " e " + currentYear + ".");
         }
     }
 }
