@@ -1,3 +1,4 @@
+
 package br.edu.fatecfranca.api.validators;
 
 import java.time.Year;
@@ -22,7 +23,7 @@ public class ManufactureYearValidator extends RequestValidator<CarRequest> {
 
             if (year < 1900 || year > currentYear) {
                 throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
+                    HttpStatus.CONFLICT,
                     "O ano de fabricação deve estar entre 1900 e o ano atual."
                 );
             }
