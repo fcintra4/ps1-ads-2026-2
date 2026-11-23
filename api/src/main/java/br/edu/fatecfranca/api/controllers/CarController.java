@@ -33,9 +33,7 @@ public class CarController {
         try {
             Car savedCar = service.create(request);
 
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(savedCar);
+            return ResponseEntity.ok(savedCar);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)

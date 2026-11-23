@@ -1,0 +1,114 @@
+@baseUrl = http://localhost:8080
+
+# Cria o usuário usado nos testes; esperado: 201.
+# @name criarUsuarioTeste
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "fullname": "Usuario de Teste Prova 2 1005",
+  "username": "teste.prova2.1005",
+  "email": "teste.prova2.1005@example.com",
+  "password": "Prova2@2026-1005",
+  "isAdmin": false
+}
+
+###
+
+# Testa login do usuário criado acima; esperado: 200 com token e dados do usuário.
+# @name login
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "teste.prova2.1005",
+  "password": "Prova2@2026-1005"
+}
+
+###
+
+@token = {{login.response.body.token}}
+
+###
+
+# Testa ano de fabricação inválido; esperado: 409.
+# @name carroAnoInvalido
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Volkswagen", "model": "Gol GTI", "color": "Azul",
+  "yearManufacture": 2994, "imported": false, "plates": "KWY9J35",
+  "sellingDate": null, "sellingPrice": null, "customerId": null
+}
+
+###
+
+# Testa sellingDate preenchida sem sellingPrice; esperado: 409.
+# @name carroDataSemPreco
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Volkswagen", "model": "Gol GTI", "color": "Azul",
+  "yearManufacture": 1994, "imported": false, "plates": "KWY9J35",
+  "sellingDate": "2026-11-23", "sellingPrice": null, "customerId": null
+}
+
+###
+
+# Testa sellingPrice preenchido sem sellingDate; esperado: 409.
+# @name carroPrecoSemData
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Volkswagen", "model": "Gol GTI", "color": "Azul",
+  "yearManufacture": 1994, "imported": false, "plates": "KWY9J35",
+  "sellingDate": null, "sellingPrice": 13500, "customerId": null
+}
+
+###
+
+# Testa sellingPrice negativo; esperado: 409.
+# @name carroPrecoNegativo
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Volkswagen", "model": "Gol GTI", "color": "Azul",
+  "yearManufacture": 1994, "imported": false, "plates": "KWY9J35",
+  "sellingDate": "2026-11-23", "sellingPrice": -400, "customerId": null
+}
+
+###
+
+# Testa cadastro válido; esperado: 200 com os dados inseridos.
+# @name carroValido
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Volkswagen", "model": "Gol GTI", "color": "Azul",
+  "yearManufacture": 1994, "imported": false, "plates": "KWY9J35",
+  "sellingDate": "2026-11-23", "sellingPrice": 13500, "customerId": null
+}
+
+###
+
+# Testa cadastro com placa duplicada (mesmo body da requisição válida); esperado: 409.
+# @name carroPlacaDuplicada
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Volkswagen", "model": "Gol GTI", "color": "Azul",
+  "yearManufacture": 1994, "imported": false, "plates": "KWY9J35",
+  "sellingDate": "2026-11-23", "sellingPrice": 13500, "customerId": null
+}
