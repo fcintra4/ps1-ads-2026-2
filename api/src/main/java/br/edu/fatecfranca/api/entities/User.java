@@ -27,19 +27,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private Boolean isAdmin = false;
+    @Column(name = "is_admin", nullable = false)
+    private Boolean isAdmin;
 
     public User() {
-    }
-
-    public User(Long id, String fullname, String username, String email, String password, Boolean isAdmin) {
-        this.id = id;
-        this.fullname = fullname;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.isAdmin = isAdmin != null ? isAdmin : false;
     }
 
     public Long getId() {
@@ -89,4 +80,5 @@ public class User {
     public void setIsAdmin(Boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
+
 }

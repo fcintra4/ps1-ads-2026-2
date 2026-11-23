@@ -14,7 +14,7 @@ public record UserRequest(
    @NotBlank(message = "O nome de usuário é obrigatório.")
    @Pattern(
        regexp = "[A-Za-z0-9._-]+",
-       message = "O nome de usuário deve conter apenas letras sem acento, números, ponto, hífen e sublinhado."
+       message = "O nome de usuário deve conter apenas letras sem acentos, números, ponto, hífen e sublinhado."
    )
    String username,
 
@@ -26,7 +26,7 @@ public record UserRequest(
    @Size(min = 8, message = "A senha deve ter pelo menos 8 caracteres.")
    String password,
 
-   @NotNull(message = "Informe true ou false para o campo isAdmin.")
+   @NotNull(message = "Deve informar se o usuário é administrador (true ou false).")
    Boolean isAdmin
 
 ) {}

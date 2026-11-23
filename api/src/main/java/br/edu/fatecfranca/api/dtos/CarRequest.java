@@ -25,7 +25,7 @@ public record CarRequest(
    @Positive(message = "O ano de fabricação deve ser maior que zero.")
    Long yearManufacture,
 
-   @NotNull(message = "Informe true ou false para o campo imported.")
+   @NotNull(message = "Deve informar se o veículo é importado (true ou false).")
    Boolean imported,
 
    @NotBlank(message = "A placa é obrigatória.")
@@ -39,8 +39,11 @@ public record CarRequest(
    LocalDate sellingDate,
 
    @Positive(message = "O preço de venda deve ser maior que zero.")
-   @Digits(integer = 10, fraction = 2,
-       message = "O preço deve ter até 10 dígitos inteiros e 2 decimais.")
+   @Digits(
+       integer = 10,
+       fraction = 2,
+       message = "O preço de venda deve ter até 10 dígitos inteiros e 2 decimais."
+   )
    BigDecimal sellingPrice,
 
    @Positive(message = "O id do cliente deve ser maior que zero.")

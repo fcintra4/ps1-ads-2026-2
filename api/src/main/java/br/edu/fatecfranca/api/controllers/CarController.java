@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.fatecfranca.api.dtos.CarRequest;
 import br.edu.fatecfranca.api.entities.Car;
+// import br.edu.fatecfranca.api.repositories.CarRepository;
 import br.edu.fatecfranca.api.services.CarService;
 import jakarta.validation.Valid;
 
@@ -22,56 +23,110 @@ import jakarta.validation.Valid;
 @RequestMapping("/cars")
 public class CarController {
 
-   private final CarService service;
+  // private final CarRepository repository;
 
-   public CarController(CarService service) {
-       this.service = service;
-   }
+  // public CarController(CarRepository repository) {
+  // this.repository = repository;
+  // }
 
-   @PostMapping
-   public ResponseEntity<Car> create(@Valid @RequestBody CarRequest request) {
+  private final CarService service;
 
-       Car savedCar = service.create(request);
+  public CarController(CarService service) {
+    this.service = service;
+  }
 
-       return ResponseEntity
-               .status(HttpStatus.CREATED)
-               .body(savedCar);
-   }
+  // @PostMapping
+  // public ResponseEntity<Car> create(@RequestBody Car car) {
+  // Car savedCar = repository.save(car);
 
-   @GetMapping
-   public List<Car> findAll() {
-       return service.findAll();
-   }
+  // return ResponseEntity
+  // .status(HttpStatus.CREATED)
+  // .body(savedCar);
+  // }
 
-   @GetMapping("/{id}")
-   public ResponseEntity<Car> findById(@PathVariable Long id) {
+  @PostMapping
+  public ResponseEntity<Car> create(@Valid @RequestBody CarRequest request) {
+    Car savedCar = service.create(request);
 
-       return service.findById(id)
-               .map(ResponseEntity::ok)
-               .orElse(ResponseEntity.notFound().build());
-   }
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(savedCar);
+  }
 
-   @PutMapping("/{id}")
-   public ResponseEntity<Car> update(
-           @PathVariable Long id,
-           @Valid @RequestBody CarRequest request) {
+  // @GetMapping
+  // public List<Car> findAll() {
+  // return repository.findAll();
+  // }
 
-       if (!service.existsById(id)) {
-           return ResponseEntity.notFound().build();
-       }
+  @GetMapping
+  public List<Car> findAll() {
+    return service.findAll();
+  }
 
-       return ResponseEntity.ok(service.update(id, request));
-   }
+  // @GetMapping("/{id}")
+  // public ResponseEntity<Car> findById(@PathVariable Long id) {
 
-   @DeleteMapping("/{id}")
-   public ResponseEntity<Void> delete(@PathVariable Long id) {
+  // return repository.findById(id)
+  // .map(ResponseEntity::ok)
+  // .orElse(ResponseEntity.notFound().build());
+  // }
 
-       if (!service.existsById(id)) {
-           return ResponseEntity.notFound().build();
-       }
+  @GetMapping("/{id}")
+  public ResponseEntity<Car> findById(@PathVariable Long id) {
 
-       service.deleteById(id);
+    return service.findById(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
 
-       return ResponseEntity.noContent().build();
-   }
+  // @PutMapping("/{id}")
+  // public ResponseEntity<Car> update(
+  // @PathVariable Long id,
+  // @RequestBody Car car) {
+
+  // if (!repository.existsById(id)) {
+  // return ResponseEntity.notFound().build();
+  // }
+
+  // car.setId(id);
+
+  // return ResponseEntity.ok(repository.save(car));
+  // }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<Car> update(
+      @PathVariable Long id,
+      @Valid @RequestBody CarRequest request) {
+
+    if (!service.existsById(id)) {
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok(service.update(id, request));
+  }
+
+  // @DeleteMapping("/{id}")
+  // public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+  // if (!repository.existsById(id)) {
+  // return ResponseEntity.notFound().build();
+  // }
+
+  // repository.deleteById(id);
+
+  // return ResponseEntity.noContent().build();
+  // }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+    if (!service.existsById(id)) {
+      return ResponseEntity.notFound().build();
+    }
+
+    service.deleteById(id);
+
+    return ResponseEntity.noContent().build();
+  }
+
 }

@@ -12,73 +12,90 @@ import br.edu.fatecfranca.api.entities.Car;
 import br.edu.fatecfranca.api.entities.Customer;
 import br.edu.fatecfranca.api.repositories.CarRepository;
 import br.edu.fatecfranca.api.repositories.CustomerRepository;
+import br.edu.fatecfranca.api.validators.ManufactureYearValidator;
+import br.edu.fatecfranca.api.validators.RequestValidator;
+import br.edu.fatecfranca.api.validators.SaleDataValidator;
+import br.edu.fatecfranca.api.validators.UniquePlatesValidator;
 
 @Service
 public class CarService {
 
-   private final CarRepository repository;
-   private final CustomerRepository customerRepository;
+    private final CarRepository repository;
+    private final CustomerRepository customerRepository;
+    private final RequestValidator<CarRequest> validator;
 
-   public CarService(CarRepository repository,
-                     CustomerRepository customerRepository) {
-       this.repository = repository;
-       this.customerRepository = customerRepository;
-   }
+    public CarService(CarRepository repository,
+            CustomerRepository customerRepository) {
+        this.repository = repository;
+        this.customerRepository = customerRepository;
 
-   private void copyToEntity(CarRequest request, Car car) {
-       car.setBrand(request.brand());
-       car.setModel(request.model());
-       car.setColor(request.color());
-       car.setYearManufacture(request.yearManufacture().intValue());
-       car.setImported(request.imported());
-       car.setPlates(request.plates());
-       car.setSellingDate(request.sellingDate());
-       car.setSellingPrice(request.sellingPrice());
+        // Cadeia: ManufactureYear -> SaleData -> UniquePlates
+        // Criada na ordem inversa, pois cada validador recebe o próximo
+        RequestValidator<CarRequest> platesValidator = new UniquePlatesValidator(repository, null);
 
-       // O DTO recebe customerId; aqui buscamos o cliente e o associamos
-       if (request.customerId() != null) {
-           Customer customer = customerRepository
-               .findById(request.customerId())
-               .orElseThrow(() -> new ResponseStatusException(
-                   HttpStatus.BAD_REQUEST,
-                   "Cliente não encontrado."));
-           car.setCustomer(customer);
-       } else {
-           car.setCustomer(null);
-       }
-   }
+        RequestValidator<CarRequest> saleDataValidator = new SaleDataValidator(platesValidator);
 
-   public Car create(CarRequest request) {
-       Car car = new Car();
+        this.validator = new ManufactureYearValidator(saleDataValidator);
+    }
 
-       copyToEntity(request, car);
+    private void copyToEntity(CarRequest request, Car car) {
+        car.setBrand(request.brand());
+        car.setModel(request.model());
+        car.setColor(request.color());
+        car.setYearManufacture(request.yearManufacture());
+        car.setImported(request.imported());
+        car.setPlates(request.plates());
+        car.setSellingDate(request.sellingDate());
+        car.setSellingPrice(request.sellingPrice());
 
-       return repository.save(car);
-   }
+        // O DTO recebe customerId; aqui buscamos o cliente e o associamos
+        if (request.customerId() != null) {
+            Customer customer = customerRepository
+                    .findById(request.customerId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Cliente não encontrado."));
+            car.setCustomer(customer);
+        } else {
+            car.setCustomer(null);
+        }
+    }
 
-   public List<Car> findAll() {
-       return repository.findAll();
-   }
+    public Car create(CarRequest request) {
+        validator.validate(request, null);
 
-   public Optional<Car> findById(Long id) {
-       return repository.findById(id);
-   }
+        Car car = new Car();
 
-   public Car update(Long id, CarRequest request) {
-       Car car = new Car();
+        copyToEntity(request, car);
 
-       copyToEntity(request, car);
+        return repository.save(car);
+    }
 
-       car.setId(id);
+    public List<Car> findAll() {
+        return repository.findAll();
+    }
 
-       return repository.save(car);
-   }
+    public Optional<Car> findById(Long id) {
+        return repository.findById(id);
+    }
 
-   public boolean existsById(Long id) {
-       return repository.existsById(id);
-   }
+    public Car update(Long id, CarRequest request) {
+        validator.validate(request, id);
 
-   public void deleteById(Long id) {
-       repository.deleteById(id);
-   }
+        Car car = new Car();
+
+        copyToEntity(request, car);
+
+        car.setId(id);
+
+        return repository.save(car);
+    }
+
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
+    }
+
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
 }

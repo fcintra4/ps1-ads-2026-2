@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.fatecfranca.api.dtos.LoginRequest;
+import br.edu.fatecfranca.api.dtos.LoginResponse;
 import br.edu.fatecfranca.api.dtos.UserRequest;
 import br.edu.fatecfranca.api.dtos.UserResponse;
 import br.edu.fatecfranca.api.entities.User;
+import br.edu.fatecfranca.api.services.TokenService;
 import br.edu.fatecfranca.api.services.UserService;
 import jakarta.validation.Valid;
-import br.edu.fatecfranca.api.dtos.LoginResponse;
-import br.edu.fatecfranca.api.services.TokenService;
 
 @RestController
 @RequestMapping("/users")
@@ -91,7 +91,6 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-
         if (!service.existsById(id)) {
             return ResponseEntity.notFound().build();
         }

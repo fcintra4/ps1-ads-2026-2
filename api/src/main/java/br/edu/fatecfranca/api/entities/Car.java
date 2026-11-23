@@ -3,6 +3,8 @@ package br.edu.fatecfranca.api.entities;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +16,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cars")
-
 public class Car {
 
     @Id
@@ -30,8 +31,9 @@ public class Car {
     @Column(nullable = false)
     private String color;
 
+    @JdbcTypeCode(SqlTypes.INTEGER)
     @Column(name = "year_manufacture", nullable = false)
-    private Integer yearManufacture;
+    private Long yearManufacture;
 
     @Column(nullable = false)
     private Boolean imported;
@@ -45,15 +47,15 @@ public class Car {
     @Column(name = "selling_price", precision = 12, scale = 2)
     private BigDecimal sellingPrice;
 
-    //@Column(name = "customer_id")
-    //private Long customerId;
+    // @Column(name = "customer_id")
+    // private Long customerId;
 
-  @ManyToOne
-  @JoinColumn(name = "customer_id")
-  private Customer customer;
-
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     public Car() {
+
     }
 
     public Long getId() {
@@ -88,11 +90,11 @@ public class Car {
         this.color = color;
     }
 
-    public Integer getYearManufacture() {
+    public Long getYearManufacture() {
         return yearManufacture;
     }
 
-    public void setYearManufacture(Integer yearManufacture) {
+    public void setYearManufacture(Long yearManufacture) {
         this.yearManufacture = yearManufacture;
     }
 
@@ -128,21 +130,21 @@ public class Car {
         this.sellingPrice = sellingPrice;
     }
 
-   // public Long getCustomerId() {
-        //return customerId;
-    //}
+    // public Long getCustomerId() {
+    // return customerId;
+    // }
 
-    //public void setCustomerId(Long customerId) {
-        //this.customerId = customerId;
-    //}
+    // public void setCustomerId(Long customerId) {
+    // this.customerId = customerId;
+    // }
 
-   // customerId agora é obtido a partir do relacionamento
-  public Long getCustomerId() {
-    return customer != null ? customer.getId() : null;
-  }
+    // customerId agora é obtido a partir do relacionamento
+    public Long getCustomerId() {
+        return customer != null ? customer.getId() : null;
+    }
 
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 
-  public void setCustomer(Customer customer) {
-    this.customer = customer;
-  }
 }

@@ -10,13 +10,13 @@ public record UserResponse(
    Boolean isAdmin
 ) {
 
-   public UserResponse(User user) {
-       this(
-           user.getId(),
-           user.getFullname(),
-           user.getUsername(),
-           user.getEmail(),
-           user.getIsAdmin()
-       );
-   }
+    public UserResponse(User user) {
+        this(
+            user.getId(),
+            user.getFullname(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getIsAdmin()
+        );
+    }
 }

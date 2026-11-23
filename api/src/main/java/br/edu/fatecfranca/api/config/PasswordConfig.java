@@ -8,14 +8,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class PasswordConfig {
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new Argon2PasswordEncoder(
-        16, // Tamanho do salt, em bytes
-        32, // Tamanho do hash, em bytes
-        4, // Paralelismo
-        65 * 1024, // Memória, em KiB: 65 MiB
-        3 // Iterações
-    );
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new Argon2PasswordEncoder(
+            16,         // Tamanho do salt, em bytes
+            32,         // Tamanho do hash, em bytes
+            4,          // Paralelismo
+            65 * 1024,  // Memória, em KiB: 65 MiB
+            3           // Iterações
+        );
+    }
 }

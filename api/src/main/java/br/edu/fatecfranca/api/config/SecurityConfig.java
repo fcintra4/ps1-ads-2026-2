@@ -20,47 +20,47 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http)
-      throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
 
-    return http
-        // A autenticação usa Bearer token, sem cookies de sessão.
-        .csrf(csrf -> csrf.disable())
+        return http
+                // A autenticação usa Bearer token, sem cookies de sessão.
+                .csrf(csrf -> csrf.disable())
 
-        // Não cria sessão para manter o usuário autenticado.
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Não cria sessão para manter o usuário autenticado.
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.POST, "/users/login")
-            .permitAll()
-            .anyRequest()
-            .authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/users/login")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
 
-        // Habilita a autenticação pelo JWT recebido no cabeçalho.
-        .oauth2ResourceServer(oauth2 -> oauth2
-            .jwt(Customizer.withDefaults()))
+                // Habilita a autenticação pelo JWT recebido no cabeçalho.
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults()))
 
-        .build();
-  }
+                .build();
+    }
 
-  @Bean
-  public JwtDecoder jwtDecoder(@Value("${jwt.secret}") String secret) {
-    // Usa os mesmos bytes da chave usada pelo TokenService.
-    var key = new SecretKeySpec(
-        secret.getBytes(StandardCharsets.UTF_8),
-        "HmacSHA256");
+    @Bean
+    public JwtDecoder jwtDecoder(@Value("${jwt.secret}") String secret) {
+        // Usa os mesmos bytes da chave usada pelo TokenService.
+        var key = new SecretKeySpec(
+                secret.getBytes(StandardCharsets.UTF_8),
+                "HmacSHA256");
 
-    NimbusJwtDecoder decoder = NimbusJwtDecoder
-        .withSecretKey(key)
-        .macAlgorithm(MacAlgorithm.HS256)
-        .build();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder
+                .withSecretKey(key)
+                .macAlgorithm(MacAlgorithm.HS256)
+                .build();
 
-    // Valida o emissor e as condições temporais do token.
-    decoder.setJwtValidator(
-        JwtValidators.createDefaultWithIssuer("fatecfranca-api"));
+        // Valida o emissor e as condições temporais do token.
+        decoder.setJwtValidator(
+                JwtValidators.createDefaultWithIssuer("fatecfranca-api"));
 
-    return decoder;
-  }
+        return decoder;
+    }
 }
