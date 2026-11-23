@@ -40,7 +40,7 @@ class CarValidationTests {
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
                 () -> service.create(request(year, LocalDate.now(), null, "ABC1D23")));
 
-        assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
         assertEquals("O ano de fabricação deve estar entre 1900 e o ano atual.", error.getReason());
         verifyNoInteractions(repository, customers);
     }
@@ -76,7 +76,7 @@ class CarValidationTests {
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
                 () -> service.create(request(2021L, date, price, "ABC1D23")));
 
-        assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
         verifyNoInteractions(repository, customers);
     }
 

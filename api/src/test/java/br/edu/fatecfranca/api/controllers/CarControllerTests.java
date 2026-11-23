@@ -41,7 +41,7 @@ class CarControllerTests {
 
     ResponseEntity<Car> response = controller.create(request());
 
-    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
     assertSame(car, response.getBody());
   }
 

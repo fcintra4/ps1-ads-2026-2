@@ -16,13 +16,13 @@ public class SaleDataValidator extends RequestValidator<CarRequest> {
         boolean hasPrice = request.sellingPrice() != null;
         if (hasDate != hasPrice) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.CONFLICT,
                 "A data e o preço de venda devem ser preenchidos juntos."
             );
         }
         if (hasPrice && request.sellingPrice().signum() <= 0) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.CONFLICT,
                 "O preço de venda deve ser maior que zero."
             );
         }

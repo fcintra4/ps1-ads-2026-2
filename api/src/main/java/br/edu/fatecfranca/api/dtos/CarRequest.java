@@ -28,7 +28,6 @@ public record CarRequest(
     String plates,
     @PastOrPresent(message = "A data de venda não pode estar no futuro.")
     LocalDate sellingDate,
-    @Positive(message = "O preço de venda deve ser maior que zero.")
     @Digits(integer = 10, fraction = 2,
             message = "O preço de venda deve ter até 10 dígitos inteiros e 2 decimais.")
     BigDecimal sellingPrice,

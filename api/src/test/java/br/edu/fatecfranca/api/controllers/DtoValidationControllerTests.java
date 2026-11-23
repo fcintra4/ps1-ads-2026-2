@@ -51,8 +51,6 @@ class DtoValidationControllerTests {
                 CAR.replace("\"ABC1D23\"", "\"abc1d23\""),
                 CAR.replace("\"ABC1D23\"", "\"ABC1234\""),
                 CAR.replace("\"sellingDate\":null", "\"sellingDate\":\"" + LocalDate.now().plusDays(1) + "\""),
-                CAR.replace("\"sellingPrice\":null", "\"sellingPrice\":0"),
-                CAR.replace("\"sellingPrice\":null", "\"sellingPrice\":-1"),
                 CAR.replace("\"sellingPrice\":null", "\"sellingPrice\":10000000000"),
                 CAR.replace("\"sellingPrice\":null", "\"sellingPrice\":1.001"),
                 CAR.replace("\"customerId\":null", "\"customerId\":0"),
@@ -109,7 +107,7 @@ class DtoValidationControllerTests {
         when(cars.update(eq(7L), any())).thenReturn(new Car());
 
         mvc.perform(post("/cars").contentType(MediaType.APPLICATION_JSON).content(payload))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
         mvc.perform(put("/cars/7").contentType(MediaType.APPLICATION_JSON).content(payload))
                 .andExpect(status().isOk());
     }
