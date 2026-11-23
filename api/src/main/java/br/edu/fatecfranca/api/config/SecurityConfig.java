@@ -1,11 +1,8 @@
 package br.edu.fatecfranca.api.config;
 
-
 import java.nio.charset.StandardCharsets;
 
-
 import javax.crypto.spec.SecretKeySpec;
-
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,41 +17,43 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 public class SecurityConfig {
-
 
    @Bean
    public SecurityFilterChain securityFilterChain(HttpSecurity http)
            throws Exception {
 
-
        return http
                // A autenticação usa Bearer token, sem cookies de sessão.
                .csrf(csrf -> csrf.disable())
-
 
                // Não cria sessão para manter o usuário autenticado.
                .sessionManagement(session -> session
                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-
                .authorizeHttpRequests(auth -> auth
-                       .requestMatchers(HttpMethod.POST, "/users/login")
+                       // Quando um controller devolve erro (400, 404, 409, 500),
+                       // o Spring encaminha para /error. Sem liberar essa rota,
+                       // TODO erro real aparece para o cliente como 401.
+                       .requestMatchers("/error").permitAll()
+
+                       // Verificação simples de que a API está no ar.
+                       .requestMatchers(HttpMethod.GET, "/").permitAll()
+
+                       // Login e cadastro de usuário não exigem token.
+                       .requestMatchers(HttpMethod.POST, "/users/login", "/users")
                        .permitAll()
+
                        .anyRequest()
                        .authenticated())
-
 
                // Habilita a autenticação pelo JWT recebido no cabeçalho.
                .oauth2ResourceServer(oauth2 -> oauth2
                        .jwt(Customizer.withDefaults()))
 
-
                .build();
    }
-
 
    @Bean
    public JwtDecoder jwtDecoder(@Value("${jwt.secret}") String secret) {
@@ -63,17 +62,14 @@ public class SecurityConfig {
                secret.getBytes(StandardCharsets.UTF_8),
                "HmacSHA256");
 
-
        NimbusJwtDecoder decoder = NimbusJwtDecoder
                .withSecretKey(key)
                .macAlgorithm(MacAlgorithm.HS256)
                .build();
 
-
        // Valida o emissor e as condições temporais do token.
        decoder.setJwtValidator(
                JwtValidators.createDefaultWithIssuer("fatecfranca-api"));
-
 
        return decoder;
    }

@@ -1,14 +1,11 @@
 package br.edu.fatecfranca.api.services;
 
-
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.stereotype.Service;
+
 import br.edu.fatecfranca.api.dtos.CustomerRequest;
-
-
 import br.edu.fatecfranca.api.entities.Customer;
 import br.edu.fatecfranca.api.repositories.CustomerRepository;
 
@@ -17,19 +14,15 @@ import br.edu.fatecfranca.api.validators.StateValidator;
 import br.edu.fatecfranca.api.validators.UniqueDocumentValidator;
 import br.edu.fatecfranca.api.validators.UniqueEmailValidator;
 
-
-
 @Service
 public class CustomerService {
 
-
    private final CustomerRepository repository;
-   private final RequestValidator validator;
+   private final RequestValidator<CustomerRequest> validator;
 
    private void copyToEntity(
     CustomerRequest request,
     Customer customer) {
-
 
     customer.setName(request.name());
     customer.setIdentDocument(request.identDocument());
@@ -42,60 +35,56 @@ public class CustomerService {
     customer.setState(request.state());
     customer.setPhone(request.phone());
     customer.setEmail(request.email());
-} 
-
+   }
 
    public CustomerService(CustomerRepository repository) {
        this.repository = repository;
-       RequestValidator emailValidator =
-       new UniqueEmailValidator(repository, null);
 
+       // A cadeia é montada de trás para frente:
+       // StateValidator -> UniqueDocumentValidator -> UniqueEmailValidator
+       RequestValidator<CustomerRequest> emailValidator =
+           new UniqueEmailValidator(repository, null);
 
-   RequestValidator documentValidator =
-       new UniqueDocumentValidator(repository, emailValidator);
+       RequestValidator<CustomerRequest> documentValidator =
+           new UniqueDocumentValidator(repository, emailValidator);
 
-
-   this.validator = new StateValidator(documentValidator);
-
+       this.validator = new StateValidator(documentValidator);
    }
-
 
    public Customer create(CustomerRequest request) {
-    validator.validate(request, null);
 
+       validator.validate(request, null);
 
-    Customer customer = new Customer();
-    copyToEntity(request, customer);
+       Customer customer = new Customer();
+       copyToEntity(request, customer);
 
-
-    return repository.save(customer);
-
+       return repository.save(customer);
    }
-
 
    public List<Customer> findAll() {
        return repository.findAll();
    }
 
-
    public Optional<Customer> findById(Long id) {
        return repository.findById(id);
    }
 
+   public Customer update(Long id, CustomerRequest request) {
 
-   public Customer update(Customer customer) {
+       validator.validate(request, id);
+
+       Customer customer = new Customer();
+       copyToEntity(request, customer);
+       customer.setId(id);
+
        return repository.save(customer);
    }
-
 
    public boolean existsById(Long id) {
        return repository.existsById(id);
    }
 
-
    public void deleteById(Long id) {
        repository.deleteById(id);
    }
-
-
 }

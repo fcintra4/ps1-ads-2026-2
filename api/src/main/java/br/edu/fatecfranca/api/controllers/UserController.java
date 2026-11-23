@@ -2,8 +2,6 @@ package br.edu.fatecfranca.api.controllers;
 
 import java.util.List;
 
-import br.edu.fatecfranca.api.dtos.UserRequest;
-import br.edu.fatecfranca.api.dtos.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,54 +13,53 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.edu.fatecfranca.api.dtos.LoginRequest;
+import br.edu.fatecfranca.api.dtos.LoginResponse;
+import br.edu.fatecfranca.api.dtos.UserRequest;
+import br.edu.fatecfranca.api.dtos.UserResponse;
 import br.edu.fatecfranca.api.entities.User;
+import br.edu.fatecfranca.api.services.TokenService;
 import br.edu.fatecfranca.api.services.UserService;
 
 import jakarta.validation.Valid;
 
-import jakarta.validation.Valid;
+@RestController
+@RequestMapping("/users")
+public class UserController {
 
+    private final UserService service;
+    private final TokenService tokenService;
 
-import br.edu.fatecfranca.api.dtos.LoginRequest;
-import br.edu.fatecfranca.api.dtos.UserResponse;
+    public UserController(UserService service, TokenService tokenService) {
+        this.service = service;
+        this.tokenService = tokenService;
+    }
 
-import br.edu.fatecfranca.api.dtos.LoginResponse;
-import br.edu.fatecfranca.api.services.TokenService;
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
 
+        return service.authenticate(request)
+                .map(user -> new LoginResponse(
+                        tokenService.generate(user),
+                        new UserResponse(user)))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .build());
+    }
 
+    @PostMapping
+    public ResponseEntity<UserResponse> create(
+            @Valid @RequestBody UserRequest request) {
 
-   @RestController
-   @RequestMapping("/users")
-   public class UserController {
-   
-   
-      private final UserService service;
-      private final TokenService tokenService;
-   
-   
-      public UserController(UserService service, TokenService tokenService) {
-          this.service = service;
-          this.tokenService = tokenService;
-      }
-   
-   
-      @PostMapping("/login")
-      public ResponseEntity<LoginResponse> login(
-              @Valid @RequestBody LoginRequest request) {
-   
-   
-          return service.authenticate(request)
-              .map(user -> new LoginResponse(
-                      tokenService.generate(user),
-                      new UserResponse(user)))
-              .map(ResponseEntity::ok)
-              .orElseGet(() -> ResponseEntity
-                      .status(HttpStatus.UNAUTHORIZED)
-                      .build());
-      }
-   
-    
- 
+        User savedUser = service.create(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new UserResponse(savedUser));
+    }
+
     @GetMapping
     public List<UserResponse> findAll() {
         return service.findAll()
