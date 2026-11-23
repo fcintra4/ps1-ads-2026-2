@@ -34,8 +34,14 @@ public class UsersService {
     public Optional<Users> findByUsername(String username) { return domain.findByUsername(username); }
     public Optional<Users> findByUsernameOrEmail(String identifier) { return domain.findByUsernameOrEmail(identifier); }
     public boolean existsByUsername(String username) { return domain.existsByUsername(username); }
+    public boolean existsByUsernameAndIdNot(String username, Long id) {
+        return domain.existsByUsernameAndIdNot(username, id);
+    }
     public Optional<Users> findByEmail(String email) { return domain.findByEmail(email); }
     public boolean existsByEmail(String email) { return domain.existsByEmail(email); }
+    public boolean existsByEmailAndIdNot(String email, Long id) {
+        return domain.existsByEmailAndIdNot(email, id);
+    }
 
     public Optional<Users> authenticate(String identifier, String rawPassword) {
         if (identifier == null || rawPassword == null || identifier.isBlank() || rawPassword.isBlank()) {

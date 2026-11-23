@@ -1,8 +1,11 @@
 package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 import br.edu.fatecfranca.api.entities.Customers;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.BrazilianDocument;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.BrazilianPhone;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
@@ -12,12 +15,14 @@ import jakarta.validation.constraints.Size;
 public class CustomerReq {
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = ".*\\S.*", message = "name must not contain only whitespace")
-	@Size(max = 100)
+	@Pattern(regexp = "[\\p{L}\\p{M}\\p{N}][\\p{L}\\p{M}\\p{N} .&'()/+-]*",
+		message = "name contains unsupported characters")
+	@Size(min = 2, max = 100)
 	private String name;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = "[A-Za-z0-9./-]{5,20}", message = "identDocument must contain 5 to 20 valid characters")
+	@Pattern(regexp = ".*\\S.*", message = "identDocument must not be blank")
+	@BrazilianDocument
 	private String identDocument;
 
 	@PastOrPresent
@@ -47,15 +52,16 @@ public class CustomerReq {
 	private String municipality;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = "[A-Z]{2}", message = "state must be two uppercase letters")
+	@Pattern(regexp = "(?i)[A-Z]{2}", message = "state must be two valid letters")
 	private String state;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = "(?=.*\\S)[0-9+()\\-\\s]{8,20}", message = "invalid phone")
+	@Pattern(regexp = ".*\\S.*", message = "phone must not be blank")
+	@BrazilianPhone
 	private String phone;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = ".*\\S.*", message = "email must not contain only whitespace")
+	@Pattern(regexp = ".*\\S.*", message = "email must not be blank")
 	@Email
 	@Size(max = 254)
 	private String email;
@@ -63,16 +69,18 @@ public class CustomerReq {
 	public Customers toEntity() {
 		Customers customer = new Customers();
 		customer.setName(name);
-		customer.setIdentDocument(identDocument);
+		customer.setIdentDocument(identDocument == null
+			? null
+			: identDocument.trim().replaceAll("[./-]", "").toUpperCase(Locale.ROOT));
 		customer.setBirthDate(birthDate);
 		customer.setStreetName(streetName);
 		customer.setHouseNumber(houseNumber);
 		customer.setComplements(complements);
 		customer.setDistrict(district);
 		customer.setMunicipality(municipality);
-		customer.setState(state);
+		customer.setState(state == null ? null : state.trim().toUpperCase(Locale.ROOT));
 		customer.setPhone(phone);
-		customer.setEmail(email);
+		customer.setEmail(email == null ? null : email.trim().toLowerCase(Locale.ROOT));
 		return customer;
 	}
 

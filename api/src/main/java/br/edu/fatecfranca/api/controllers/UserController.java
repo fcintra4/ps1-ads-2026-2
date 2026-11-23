@@ -1,5 +1,7 @@
 package br.edu.fatecfranca.api.controllers;
 
+import java.util.Locale;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -48,10 +50,23 @@ public class UserController {
 
 	private boolean exists(Long id) { return this.service.existsById(id); }
 
+	private String normalizeEmail(String email) {
+		return email.trim().toLowerCase(Locale.ROOT);
+	}
+
 	@PostMapping
 	public ResponseEntity<Contract<Long>> create(
 			@Validated(ValidationGroups.Required.class) @RequestBody UserReq userReq
 	) {
+		if (service.existsByUsername(userReq.getUsername())) {
+			Contract<Long> body = Contract.conflict("USERNAME_ALREADY_EXISTS", "Username is already registered.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		}
+		if (service.existsByEmail(normalizeEmail(userReq.getEmail()))) {
+			Contract<Long> body = Contract.conflict("EMAIL_ALREADY_EXISTS", "Email is already registered.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		}
+
 		Contract<Long> body = Contract.created(this.service.create(userReq.toEntity()).getId());
 		return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
 	}
@@ -108,6 +123,14 @@ public class UserController {
 			Contract<UserDto> body = Contract.notFound("USER_NOT_FOUND", "User not found");
 			return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
 		}
+		if (service.existsByUsernameAndIdNot(userReq.getUsername(), id)) {
+			Contract<UserDto> body = Contract.conflict("USERNAME_ALREADY_EXISTS", "Username is already registered.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		}
+		if (service.existsByEmailAndIdNot(normalizeEmail(userReq.getEmail()), id)) {
+			Contract<UserDto> body = Contract.conflict("EMAIL_ALREADY_EXISTS", "Email is already registered.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		}
 
 		Users user = userReq.toEntity();
 		user.setId(id);
@@ -157,11 +180,21 @@ public class UserController {
 			Contract<UserDto> body = Contract.badRequest("BAD_REQUEST", "no fields provided for update");
 			return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
 		}
+		if (userReq.getUsername() != null
+				&& service.existsByUsernameAndIdNot(userReq.getUsername(), id)) {
+			Contract<UserDto> body = Contract.conflict("USERNAME_ALREADY_EXISTS", "Username is already registered.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		}
+		if (userReq.getEmail() != null
+				&& service.existsByEmailAndIdNot(normalizeEmail(userReq.getEmail()), id)) {
+			Contract<UserDto> body = Contract.conflict("EMAIL_ALREADY_EXISTS", "Email is already registered.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+		}
 
 		Users user = optionalUser.get();
 		if (userReq.getFullname() != null) user.setFullname(userReq.getFullname());
 		if (userReq.getUsername() != null) user.setUsername(userReq.getUsername());
-		if (userReq.getEmail() != null) user.setEmail(userReq.getEmail());
+		if (userReq.getEmail() != null) user.setEmail(normalizeEmail(userReq.getEmail()));
 		if (userReq.getPassword() != null) user.setPassword(userReq.getPassword());
 
 		Contract<UserDto> body = Contract.ok(new UserDto(this.service.update(user)));

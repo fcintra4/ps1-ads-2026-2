@@ -3,6 +3,7 @@ package br.edu.fatecfranca.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +25,7 @@ import br.edu.fatecfranca.api.services.UsersService;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ForgotPasswordRequest;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.LoginRequest;
 import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.ResetPasswordRequest;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs.UserReq;
 import br.edu.fatecfranca.api.services.policy.contracts.Contract;
 import br.edu.fatecfranca.api.services.policy.contracts.presentation.responses.LoginResponse;
 
@@ -90,5 +92,21 @@ class UserControllerAuthTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertFalse(response.getBody().isSuccess());
+    }
+
+    @Test
+    void createRejectsDuplicateEmailWithConflict() {
+        when(usersService.existsByEmail("ana@example.com")).thenReturn(true);
+        UserReq request = new UserReq();
+        request.setFullname("Ana Souza");
+        request.setUsername("ana.souza");
+        request.setEmail("ANA@example.com");
+        request.setPassword("ValidPass123");
+
+        var response = controller.create(request);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("EMAIL_ALREADY_EXISTS", response.getBody().getError().getCode());
+        verify(usersService, never()).create(org.mockito.ArgumentMatchers.any());
     }
 }

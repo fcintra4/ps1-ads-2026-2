@@ -11,16 +11,20 @@ import org.springframework.stereotype.Service;
 import br.edu.fatecfranca.api.entities.Cars;
 import br.edu.fatecfranca.api.logic.domain.CarsDomain;
 import br.edu.fatecfranca.api.repositories.interfaces.CarRepository;
+import br.edu.fatecfranca.api.repositories.interfaces.CustomerRepository;
 
 @Service
 public class CarsService {
 
     private final CarsDomain domain;
+    private final CustomerRepository customerRepository;
 
-    public CarsService(CarRepository repository) {
+    public CarsService(CarRepository repository, CustomerRepository customerRepository) {
         this.domain = new CarsDomain(repository);
+        this.customerRepository = customerRepository;
     }
 
+    public boolean customerExists(Long customerId) { return customerRepository.existsById(customerId); }
     public Cars create(Cars car) { return domain.create(car); }
     public List<Cars> findAll() { return domain.findAll(); }
     public Page<Cars> findAll(Pageable pageable) { return domain.findAll(pageable); }

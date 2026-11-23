@@ -1,6 +1,7 @@
 package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.dtos;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import br.edu.fatecfranca.api.entities.Customers;
@@ -9,6 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.BrazilianDocument;
+import br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.validators.BrazilianPhone;
 
 public class CustomerDto{
 
@@ -17,11 +20,13 @@ public class CustomerDto{
 
 	@NotBlank(message = "name must not be blank")
 	@Pattern(regexp = ".*\\S.*", message = "name must not contain only whitespace")
-	@Size(max = 100, message = "name must be at most 100 characters")
+	@Size(min = 2, max = 100, message = "name must contain 2 to 100 characters")
+	@Pattern(regexp = "[\\p{L}\\p{M}\\p{N}][\\p{L}\\p{M}\\p{N} .&'()/+-]*",
+		message = "name contains unsupported characters")
 	private String name;
 
 	@NotBlank(message = "identDocument must not be blank")
-	@Pattern(regexp = "[A-Za-z0-9./-]{5,20}", message = "identDocument must contain 5 to 20 valid characters")
+	@BrazilianDocument
 	private String identDocument;
 
 	@PastOrPresent(message = "birthDate must be in the past or present")
@@ -50,11 +55,11 @@ public class CustomerDto{
 	private String municipality;
 
 	@NotBlank(message = "state must not be blank")
-	@Pattern(regexp = "^[A-Z]{2}$", message = "state must be two uppercase letters")
+	@Pattern(regexp = "(?i)^[A-Z]{2}$", message = "state must be two letters")
 	private String state;
 
 	@NotBlank(message = "phone must not be blank")
-	@Pattern(regexp = "(?=.*\\S)[0-9+()\\-\\s]{8,20}", message = "invalid phone")
+	@BrazilianPhone
 	private String phone;
 
 	@NotBlank(message = "email must not be blank")
@@ -84,16 +89,18 @@ public class CustomerDto{
 	public Customers toEntity() {
 		Customers c = new Customers();
 		c.setName(this.name);
-		c.setIdentDocument(this.identDocument);
+		c.setIdentDocument(this.identDocument == null
+			? null
+			: this.identDocument.trim().replaceAll("[./-]", "").toUpperCase(Locale.ROOT));
 		c.setBirthDate(this.birthDate);
 		c.setStreetName(this.streetName);
 		c.setHouseNumber(this.houseNumber);
 		c.setComplements(this.complements);
 		c.setDistrict(this.district);
 		c.setMunicipality(this.municipality);
-		c.setState(this.state);
+		c.setState(this.state == null ? null : this.state.trim().toUpperCase(Locale.ROOT));
 		c.setPhone(this.phone);
-		c.setEmail(this.email);
+		c.setEmail(this.email == null ? null : this.email.trim().toLowerCase(Locale.ROOT));
 		return c;
 	}
 

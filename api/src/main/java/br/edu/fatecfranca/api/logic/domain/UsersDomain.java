@@ -39,6 +39,12 @@ public class UsersDomain {
     public Optional<Users> findByUsername(String username) { return repository.findByUsername(username); }
     public Optional<Users> findByUsernameOrEmail(String identifier) { return repository.findByUsernameOrEmail(identifier); }
     public boolean existsByUsername(String username) { return repository.existsByUsername(username); }
+    public boolean existsByUsernameAndIdNot(String username, Long id) {
+        return repository.existsByUsernameAndIdNot(username, id);
+    }
     public Optional<Users> findByEmail(String email) { return repository.findByEmail(email); }
     public boolean existsByEmail(String email) { return repository.existsByEmail(email); }
+    public boolean existsByEmailAndIdNot(String email, Long id) {
+        return repository.existsByEmailAndIdNot(email, id);
+    }
 }

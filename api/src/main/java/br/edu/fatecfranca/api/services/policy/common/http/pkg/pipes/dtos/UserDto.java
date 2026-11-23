@@ -13,8 +13,8 @@ public class UserDto {
 	private Long id;
 
 	@NotBlank(message = "fullname must not be blank")
-	@Pattern(regexp = ".*\\S.*", message = "fullname must not contain only whitespace")
-	@Size(max = 100, message = "fullname must be at most 100 characters")
+	@Size(min = 2, max = 100, message = "fullname must contain 2 to 100 characters")
+	@Pattern(regexp = "[\\p{L}\\p{M}][\\p{L}\\p{M} .'-]*", message = "fullname must contain only letters and name separators")
 	private String fullname;
 
 	@NotBlank(message = "username must not be blank")
@@ -22,6 +22,7 @@ public class UserDto {
 	private String username;
 
 	@NotBlank(message = "email must not be blank")
+	@Pattern(regexp = ".*\\S.*", message = "email must not be blank")
 	@Email(message = "email must be valid")
 	@Size(max = 254, message = "email must be at most 254 characters")
 	private String email;

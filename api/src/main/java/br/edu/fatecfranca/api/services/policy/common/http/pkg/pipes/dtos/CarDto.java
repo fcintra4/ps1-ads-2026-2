@@ -45,7 +45,8 @@ public class CarDto {
     private Boolean imported;
 
     @NotBlank(message = "plates must not be blank")
-    @Pattern(regexp = "[A-Za-z0-9-]{5,10}", message = "plates must be a valid plate identifier")
+    @Pattern(regexp = "(?i)([A-Z]{3}[0-9]{4}|[A-Z]{3}[0-9][A-Z0-9][0-9]{2})",
+        message = "plates must be a valid Brazilian plate")
     private String plates;
 
     @PastOrPresent(message = "sellingDate must be in the past or present")

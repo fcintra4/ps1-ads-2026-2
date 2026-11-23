@@ -37,6 +37,18 @@ public class CarController {
     public ResponseEntity<Contract<Long>> create(
             @Validated(ValidationGroups.Required.class) @RequestBody CarReq carReq
     ) {
+        if (service.existsByPlates(carReq.getPlates())) {
+            Contract<Long> body = Contract.conflict(
+                    "PLATE_ALREADY_EXISTS",
+                    "A car with this plate already exists."
+            );
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        }
+        if (carReq.getCustomerId() != null && !service.customerExists(carReq.getCustomerId())) {
+            Contract<Long> body = Contract.notFound("CUSTOMER_NOT_FOUND", "Customer not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        }
+
         Contract<Long> body = Contract.created(this.service.create(carReq.toEntity()).getId());
         return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
     }
@@ -50,6 +62,19 @@ public class CarController {
             Contract<CarDto> body = Contract.notFound("CAR_NOT_FOUND", "Car not found");
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
         }
+        var existingCarWithPlate = service.findByPlates(carReq.getPlates());
+        if (existingCarWithPlate.isPresent() && !id.equals(existingCarWithPlate.get().getId())) {
+            Contract<CarDto> body = Contract.conflict(
+                    "PLATE_ALREADY_EXISTS",
+                    "A car with this plate already exists."
+            );
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+        }
+        if (carReq.getCustomerId() != null && !service.customerExists(carReq.getCustomerId())) {
+            Contract<CarDto> body = Contract.notFound("CUSTOMER_NOT_FOUND", "Customer not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+        }
+
         Cars car = carReq.toEntity();
         car.setId(id);
         Contract<CarDto> body = Contract.ok(new CarDto(this.service.update(car)));
@@ -96,6 +121,10 @@ public class CarController {
         if (!carReq.hasAnyField()) {
             Contract<CarDto> body = Contract.badRequest("BAD_REQUEST", "no fields provided for update");
             return ResponseEntity.status(HttpStatus.valueOf(body.getHttpStatus())).body(body);
+        }
+        if (carReq.getCustomerId() != null && !service.customerExists(carReq.getCustomerId())) {
+            Contract<CarDto> body = Contract.notFound("CUSTOMER_NOT_FOUND", "Customer not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         }
 
         Cars c = opt.get();

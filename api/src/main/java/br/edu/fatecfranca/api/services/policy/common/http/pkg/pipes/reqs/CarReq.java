@@ -2,6 +2,7 @@ package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Locale;
 
 import br.edu.fatecfranca.api.entities.Cars;
 import br.edu.fatecfranca.api.entities.Customers;
@@ -41,7 +42,8 @@ public class CarReq {
 	private Boolean imported;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = "[A-Za-z0-9-]{5,10}", message = "plates must be a valid plate identifier")
+	@Pattern(regexp = "(?i)([A-Z]{3}[0-9]{4}|[A-Z]{3}[0-9][A-Z0-9][0-9]{2})",
+		message = "plates must be a valid Brazilian plate")
 	private String plates;
 
 	@PastOrPresent
@@ -61,7 +63,7 @@ public class CarReq {
 		car.setColor(color);
 		car.setYearManufacture(yearManufacture);
 		car.setImported(imported);
-		car.setPlates(plates);
+		car.setPlates(plates == null ? null : plates.toUpperCase(Locale.ROOT));
 		car.setSellingDate(sellingDate);
 		car.setSellingPrice(sellingPrice);
 		if (customerId != null) {

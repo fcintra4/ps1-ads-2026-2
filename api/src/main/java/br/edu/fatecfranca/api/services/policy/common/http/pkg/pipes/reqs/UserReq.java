@@ -1,5 +1,7 @@
 package br.edu.fatecfranca.api.services.policy.common.http.pkg.pipes.reqs;
 
+import java.util.Locale;
+
 import br.edu.fatecfranca.api.entities.Users;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,8 +11,8 @@ import jakarta.validation.constraints.Size;
 public class UserReq {
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = ".*\\S.*", message = "fullname must not contain only whitespace")
-	@Size(max = 100)
+	@Size(min = 2, max = 100)
+	@Pattern(regexp = "[\\p{L}\\p{M}][\\p{L}\\p{M} .'-]*", message = "fullname must contain only letters and name separators")
 	private String fullname;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
@@ -18,7 +20,7 @@ public class UserReq {
 	private String username;
 
 	@NotBlank(groups = ValidationGroups.Required.class)
-	@Pattern(regexp = ".*\\S.*", message = "email must not contain only whitespace")
+	@Pattern(regexp = ".*\\S.*", message = "email must not be blank")
 	@Email
 	@Size(max = 254)
 	private String email;
@@ -29,9 +31,9 @@ public class UserReq {
 
 	public Users toEntity() {
 		Users user = new Users();
-		user.setFullname(fullname);
+		user.setFullname(fullname == null ? null : fullname.trim());
 		user.setUsername(username);
-		user.setEmail(email);
+		user.setEmail(email == null ? null : email.trim().toLowerCase(Locale.ROOT));
 		user.setPassword(password);
 		return user;
 	}
